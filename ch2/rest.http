@@ -1,0 +1,445 @@
+### 
+POST http://localhost:3030/api/users/
+Content-Type: application/json
+
+{
+  "email": "cient@client.com",
+  "nickname": "nickname",
+  "password": "121212" 
+}
+
+### 
+GET http://localhost:3030/api/users/ HTTP/1.1
+Content-Type: application/json
+
+### 
+POST http://localhost:4000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation Login( 
+  $username: String!
+  $password: String!
+){
+  login(  
+    username: $username,
+    password: $password
+  ) {
+      ok
+      token
+      error
+    }
+}
+
+{
+  "username": "moon-4",
+  "password": "121212"
+}
+
+### 
+POST http://localhost:4000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+query SeeProfile($username: String!) {
+  seeProfile(username: $username) {
+    firstName
+    lastName
+    username
+    email
+  }
+}
+
+{
+  "username": "moon"
+}
+
+### 
+POST http://localhost:4000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation CreateAccount( 
+  $firstName: String!
+  $lastName: String
+  $username: String!
+  $email: String!
+  $password: String!
+){
+  createAccount(  
+    firstName: $firstName,
+    lastName: $lastName,
+    username: $username,
+    email: $email,
+    password: $password
+  ) {
+      firstName
+      lastName
+      username
+      email
+    }
+}
+
+{
+  "firstName": "Sukdo",
+  "lastName": "Moon",
+  "username": "moon-4",
+  "email": "moon-4@client.com",
+  "password": "121212"
+}
+
+### 
+POST http://localhost:4000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+query Movies {
+  movies {
+    id 
+    title
+    year
+    genre
+  }
+}
+
+### 
+POST http://localhost:4000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+query Movie($id: Int!) {
+  movie(id: $id) {
+    id 
+    title
+    year
+    genre
+  }
+}
+
+{
+  "id": 5
+}
+
+### 
+POST http://localhost:4000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation CreateMovie($title: String!, $year: Int!, $genre: String) {
+  createMovie(title: $title, year: $year, genre: $genre) {
+    id 
+    title
+    year
+    genre    
+  }
+}
+
+{
+    "title": "Star Craft",
+    "year": 2022,
+    "genre": "Ultra Fantacy"
+}
+
+### 
+POST http://localhost:4000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation DeleteMovie($id: Int!) {
+  deleteMovie(id: $id) {
+    id 
+    title
+    year
+    genre    
+  }
+}
+
+{
+    "id": 3
+}
+
+### 
+POST http://localhost:4000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation UpdateMovie($id: Int!, $title: String!, $year: Int) {
+  updateMovie(id: $id, title: $title, year: $year) {
+    id 
+    title
+    year
+    genre    
+  }
+}
+
+{
+    "id": 5,
+    "title": "Star Wars",
+    "year": 1999
+}
+
+### 
+# 토큰의 소유자가 user id 15인 경우 code는 user id 13의 것인데도 동작한다.
+# 나중에 문제가 없는 것인지 체크가 필요하다.
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+x-jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MTIzNTE5ODV9.L6BYDzFWUNymMmR-kHxuWk_Uqgq3daSjBDgsb0W1Uy0
+
+mutation {
+  verifyEmail(input: {
+    code: "25fe0319-120a-4ddf-aec3-4deabc061b23"
+  }) {
+    ok
+    error
+  }
+}
+
+### 
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  login(input: {
+    email: "0604commit@las.com"
+    password: "12345"
+  }) {
+    ok
+    error
+    token
+  }
+}
+
+###
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  createAccount(input: {
+    email: "0705commit@las.com"
+    password: "12345"
+    role: Client
+  }) {
+    ok
+    error
+  }
+}
+
+### 5.12   1
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+x-jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjEyMjcyNjU0fQ.Tusjvu5cB7iBJp1VFQXgJsmCBbfOmK7NowH1f6tFq6Q
+
+mutation {
+  editProfile(input: {
+    email: "강정수@hong.com"
+    password: "1234512345"
+  }) {
+    ok
+    error
+  }
+}
+
+###
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+x-jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsImlhdCI6MTYxMTMzMjQyNH0.KHZX3ANQqHSlquSt7cPwZJ5kIIRz9okdbC2jnmimGhU
+
+query {
+  userProfile(userId: 23) {
+    ok
+    error
+    user {
+      id
+      email
+      password
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+###
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+x-jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjEyMjcyNjU0fQ.Tusjvu5cB7iBJp1VFQXgJsmCBbfOmK7NowH1f6tFq6Q
+
+query {
+  me {
+      id
+      email
+      password
+      createdAt
+      updatedAt
+      role
+  }
+}
+
+###
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+x-jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsImlhdCI6MTYxMTMzMjQyNH0.KHZX3ANQqHSlquSt7cPwZJ5kIIRz9okdbC2jnmimGhU
+
+query {
+  me {
+    email
+  }
+}
+
+### 5.2 JWT and Modules
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  login(input: {
+    email: "잭시오01@las.com"
+    password: "12345"
+  }) {
+    ok
+    error
+    token
+  }
+}
+
+###
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  createAccount(input: {
+    email: "0601코밋@las.com"
+    password: "12345"
+    role: Client
+  }) {
+    ok
+    error
+  }
+}
+
+### 4.9 Log In part Two
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  login(input: {
+    email: "남진@hong.com"
+    password: "12345"
+  }) {
+    ok
+    error
+    token
+  }
+}
+
+### 4.8 Log In part One
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  login(input: {
+    email: "강정수@hong.com"
+    password: "1234512345"
+  }) {
+    ok
+    error
+    token
+  }
+}
+
+### 4.5 Create Account Mutation part Three
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  createAccount(input: {
+    email: "강정수@hong.com"
+    password: "12345"
+    role: Client
+  }) {
+    ok
+    error
+  }
+}
+
+### 4.2
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+query {
+  hi
+}
+
+### 3.8 Update Restaurant part Two
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  updateRestaurant(
+    input: {
+      id: 9
+      data: {
+        name: "Updated"
+        isVegan: false
+      }
+    }
+  )
+}
+
+### 3.7 Update Restaurant part One
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  updateRestaurant(
+    input: {
+      id: 9
+      data: {
+        name: "Without isVegan test2"
+      }
+    }
+  )
+}
+
+### 3.6 Create Restaurant
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  createRestaurant(
+    input: {
+      name: "Without isVegan"
+    }
+  )
+}
+
+### 3.4 Create Restaurant
+POST http://localhost:3000/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  createRestaurant(
+    input: {
+      name: "kko is a"
+      isVegan: false
+      address: "123qqqqqq"
+      ownersName: "123qqqqqqq"
+      categoryName: "123123"
+    }
+  )
+}
