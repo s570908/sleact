@@ -69,6 +69,8 @@ export class UsersService {
         nickname,
         password: hashedPassword,
       });
+      // 롤백 테스트 후에 comment out 할 것
+      throw new Error("롤백되나 보아라!");
       await queryRunner.manager.getRepository(WorkspaceMembers).save({
         UserId: returned.id,
         WorkspaceId: 1,
