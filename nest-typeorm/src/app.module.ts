@@ -18,6 +18,7 @@ import { ChannelsModule } from './channels/channels.module';
 import { DMsModule } from './dms/dms.module';
 import { FrontendMiddleware } from './middlewares/frontend.middleware';
 
+//// 33강 웹소켓 강의와 다름.
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),

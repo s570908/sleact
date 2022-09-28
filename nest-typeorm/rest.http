@@ -8,11 +8,24 @@ Content-Type: application/json
 }
 
 ### 
+# @prompt email
+# @prompt nickname
+# @prompt password
 POST http://localhost:3030/api/users/
 Content-Type: application/json
 
 {
-  "email": "cient-200@client.com",
+  "email": {{email}},
+  "nickname":{{nickname}},
+  "password":{{password}} 
+}
+
+### 
+POST http://localhost:3030/api/users/
+Content-Type: application/json
+
+{
+  "email": "cient-600@client.com",
   "nickname": "nickname",
   "password": "121212" 
 }

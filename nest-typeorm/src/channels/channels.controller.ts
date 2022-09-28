@@ -129,6 +129,7 @@ export class ChannelsController {
   )
   @Post(':url/channels/:name/images')
   async createWorkspaceChannelImages(
+    //// postImages 34강
     @Param('url') url,
     @Param('name') name,
     @UploadedFiles() files: Express.Multer.File[],

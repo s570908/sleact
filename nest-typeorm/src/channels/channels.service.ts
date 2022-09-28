@@ -131,6 +131,7 @@ export class ChannelsService {
   }
 
   async createWorkspaceChannelChats(
+    //// postChat 33강
     url: string,
     name: string,
     content: string,
@@ -152,6 +153,7 @@ export class ChannelsService {
       where: { id: savedChat.id },
       relations: ['User', 'Channel'],
     });
+    // socket.io로 워크스페이스 + 채널 사용자에게 전송
     this.eventsGateway.server
       // .of(`/ws-${url}`)
       .to(`/ws-${url}-${chatWithUser.ChannelId}`)

@@ -6,6 +6,7 @@ import { WorkspaceMembers } from '../entities/WorkspaceMembers';
 import { UsersService } from './users.service';
 
 class MockUserRepository {
+  //// ES2019 에서는 해쉬 # prefix 를 추가해 private class 필드를 선언할 수 있게 되었다.
   #data = [{ id: 1, email: 'zerohch0@gmail.com' }];
   findOne({ where: { email } }) {
     const data = this.#data.find((v) => v.email === email);
