@@ -25,7 +25,7 @@ POST http://localhost:3030/api/users/
 Content-Type: application/json
 
 {
-  "email": "cient-600@client.com",
+  "email": "cient-700@client.com",
   "nickname": "nickname",
   "password": "121212" 
 }

@@ -1,11 +1,12 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
+import { NextFunction, Request, Response } from 'express';
 import path from 'path';
 
 @Injectable()
 export class FrontendMiddleware implements NestMiddleware {
-  use(req, res, next) {
-    const { baseUrl } = req;
-    if (baseUrl.includes('/api')) {
+  async use(req: Request, res: Response, next: NextFunction): Promise<any> {
+    const { originalUrl } = req;
+    if (originalUrl.includes('/api')) {
       next();
     } else {
       res.sendFile(
