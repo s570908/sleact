@@ -31,6 +31,7 @@ const DirectMessage = () => {
     fetcher,
     {
       onSuccess(data) {
+        console.log('DM--chats: ', DataView);
         if (data?.length === 1) {
           setTimeout(() => {
             scrollbarRef.current?.scrollToBottom();
@@ -126,6 +127,8 @@ const DirectMessage = () => {
     (e) => {
       e.preventDefault();
       console.log(e);
+      console.log('e.dataTransfer.items: ', e.dataTransfer.items);
+      console.log('e.dataTransfer.files: ', e.dataTransfer.files);
       const formData = new FormData();
       if (e.dataTransfer.items) {
         // Use DataTransferItemList interface to access the file(s)
@@ -155,7 +158,7 @@ const DirectMessage = () => {
 
   const onDragOver = useCallback((e) => {
     e.preventDefault();
-    console.log(e);
+    console.log('onDragOver: e', e);
     setDragOver(true);
   }, []);
 

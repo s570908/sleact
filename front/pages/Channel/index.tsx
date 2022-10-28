@@ -143,6 +143,8 @@ const Channel = () => {
     (e) => {
       e.preventDefault();
       console.log(e);
+      console.log('e.dataTransfer.items: ', e.dataTransfer.items);
+      console.log('e.dataTransfer.files: ', e.dataTransfer.files);
       const formData = new FormData();
       if (e.dataTransfer.items) {
         // Use DataTransferItemList interface to access the file(s)
@@ -172,7 +174,7 @@ const Channel = () => {
 
   const onDragOver = useCallback((e) => {
     e.preventDefault();
-    console.log(e);
+    console.log('onDragOver: e', e);
     setDragOver(true);
   }, []);
 
@@ -193,8 +195,7 @@ const Channel = () => {
             className="c-button-unstyled p-ia__view_header__button"
             aria-label="Add people to #react-native"
             data-sk="tooltip_parent"
-            type="button"
-          >
+            type="button">
             <i className="c-icon p-ia__view_header__button_icon c-icon--add-user" aria-hidden="true" />
           </button>
         </div>

@@ -63,8 +63,7 @@ const ChatBox: FC<Props> = ({ onSubmitForm, chat, onChangeChat, placeholder, dat
           onKeyPress={onKeydownChat}
           placeholder={placeholder}
           inputRef={textareaRef}
-          allowSuggestionsAboveCursor
-        >
+          allowSuggestionsAboveCursor>
           <Mention
             appendSpaceOnAdd
             trigger="@"
@@ -82,8 +81,7 @@ const ChatBox: FC<Props> = ({ onSubmitForm, chat, onChangeChat, placeholder, dat
             aria-label="Send message"
             data-sk="tooltip_parent"
             type="submit"
-            disabled={!chat?.trim()}
-          >
+            disabled={!chat?.trim()}>
             <i className="c-icon c-icon--paperplane-filled" aria-hidden="true" />
           </SendButton>
         </Toolbox>
