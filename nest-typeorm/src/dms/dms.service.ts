@@ -87,6 +87,7 @@ export class DMsService {
     id: number,
     myId: number,
   ) {
+    console.log('=======>  files:', files);
     const workspace = await this.workspacesRepository.findOne({
       where: { url },
     });
