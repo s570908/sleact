@@ -19,9 +19,9 @@ const LogIn = () => {
         .post(
           '/api/users/login',
           { email, password },
-          {
-            withCredentials: true,
-          },
+          // {
+          //   withCredentials: true,
+          // },
         )
         .then(() => {
           mutate();
