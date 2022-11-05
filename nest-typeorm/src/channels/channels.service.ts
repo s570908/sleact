@@ -166,7 +166,7 @@ export class ChannelsService {
     files: Express.Multer.File[],
     myId: number,
   ) {
-    console.log('=======>  files:', files);
+    //console.log('=======>  files:', files);
     const channel = await this.channelsRepository
       .createQueryBuilder('channel')
       .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {

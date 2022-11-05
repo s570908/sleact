@@ -86,7 +86,7 @@ export class DMsController {
     @UploadedFiles() files: Express.Multer.File[],
     @User() user: Users,
   ) {
-    console.log('=====> files: ', files);
+    //console.log('=====> files: ', files);
     return this.dmsService.createWorkspaceDMImages(url, files, id, user.id);
   }
 

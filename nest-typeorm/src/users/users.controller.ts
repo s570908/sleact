@@ -40,7 +40,7 @@ export class UsersController {
   @UseGuards(NotLoggedInGuard)
   @Post()
   async join(@Body() data: JoinRequestDto) {
-    console.log('Post--join', data);
+    //console.log('Post--join', data);
     const user = this.usersService.findByEmail(data.email);
     if (!user) {
       throw new NotFoundException();
