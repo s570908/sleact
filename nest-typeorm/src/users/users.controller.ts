@@ -26,6 +26,7 @@ export class UsersController {
   @ApiOperation({ summary: '내 정보 가져오기' })
   @Get()
   async getProfile(@User() user: Users) {
+    console.log('GET:api/users: ', user);
     return user || false;
   }
 
@@ -33,6 +34,7 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@User() user: Users) {
+    console.log('POST:api/users/login: ', user);
     return user;
   }
 

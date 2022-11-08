@@ -23,7 +23,8 @@ const LogIn = () => {
           //   withCredentials: true,
           // },
         )
-        .then(() => {
+        .then((response) => {
+          console.log('LogIn, response.data: ', response.data);
           mutate();
         })
         .catch((error) => {

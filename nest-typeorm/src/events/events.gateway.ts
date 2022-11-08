@@ -28,7 +28,7 @@ export class EventsGateway
     @ConnectedSocket() socket: Socket,
   ) {
     const newNamespace = socket.nsp;
-    console.log('login', newNamespace);
+    //console.log('login', newNamespace);
     onlineMap[socket.nsp.name][socket.id] = data.id;
     newNamespace.emit('onlineList', Object.values(onlineMap[socket.nsp.name]));
     data.channels.forEach((channel) => {
