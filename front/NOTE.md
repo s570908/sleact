@@ -24,3 +24,7 @@ https://www.zerocho.com/category/HTML&DOM/post/59465380f2c7fb0018a1a263
 # File drag and drop
 
 https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+
+# HTML label 태그 for 사용법 및 for 없이 사용법
+
+https://dasima.xyz/html-label/
