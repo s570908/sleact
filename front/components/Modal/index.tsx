@@ -30,7 +30,7 @@ interface Props {
   children: ReactNode;
 }
 
-const Modal: FC<Props> = ({ show, onCloseModal, children }: props) => {
+const Modal: FC<Props> = ({ show, onCloseModal, children }: Props) => {
   const stopPropagation = useCallback((e) => {
     e.stopPropagation();
   }, []);
