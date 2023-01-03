@@ -23,6 +23,9 @@ const Chat: FC<Props> = memo(({ data }) => {
         <img src={`${BACK_URL}/${data.content}`} style={{ maxHeight: 200 }} />
       </>
     ) : (
+      // @[제로초1](7)
+      //    \d 숫자 +는 1개 이상  ?는 0개나 1개  *는 0개 이상  .는 문자  g는 모두 찾기
+      //    .+는 최대한 많이 찾는다     .+?는 최소한으로 찾는다
       regexifyString({
         pattern: /@\[(.+?)]\((\d+?)\)|\n/g,
         decorator(match, index) {

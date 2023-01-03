@@ -9,10 +9,10 @@ export class LocalAuthGuard extends AuthGuard('local') {
     const can = await super.canActivate(context);
     if (can) {
       const request = context.switchToHttp().getRequest();
-      console.log(
-        '현재 이 request에는 user가 들어 있다. 확인해보자 LocalAuthGuard, request: ',
-        request.user,
-      );
+      // console.log(
+      //   '현재 이 request에는 user가 들어 있다. 확인해보자 LocalAuthGuard, request: ',
+      //   request.user,
+      // );
 
       // super.logIn(request)은 LocalSerializer.serializeUser를 수행시켜서
       // done(null, user.id)에 있는 user.id를 session에 저장한다. 그 다음,

@@ -15,7 +15,7 @@ export class LocalSerializer extends PassportSerializer {
   }
 
   serializeUser(user: Users, done: CallableFunction) {
-    console.log('serializeUser--user: ', user);
+    //console.log('serializeUser--user: ', user);
     done(null, user.id);
   }
 
@@ -31,7 +31,7 @@ export class LocalSerializer extends PassportSerializer {
         },
       )
       .then((user) => {
-        console.log('deserializeUser--user: ', user);
+        //console.log('deserializeUser--user: ', user);
         done(null, user);
       })
       .catch((error) => done(error));
