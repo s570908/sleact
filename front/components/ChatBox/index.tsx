@@ -13,7 +13,7 @@ interface Props {
   data?: IUser[];
 }
 const ChatBox: FC<Props> = ({ onSubmitForm, chat, onChangeChat, placeholder, data }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef(null);
   useEffect(() => {
     if (textareaRef.current) {
       autosize(textareaRef.current);
@@ -22,6 +22,7 @@ const ChatBox: FC<Props> = ({ onSubmitForm, chat, onChangeChat, placeholder, dat
 
   const onKeydownChat = useCallback(
     (e) => {
+      console.log(e);
       if (e.key === 'Enter') {
         if (!e.shiftKey) {
           e.preventDefault();
