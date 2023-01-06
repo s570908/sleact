@@ -17,7 +17,7 @@ const Chat: FC<Props> = memo(({ data }) => {
   const user: IUser = 'Sender' in data ? data.Sender : data.User;
 
   const result = useMemo<(string | JSX.Element)[] | JSX.Element>(() => {
-    console.log('Chat--result: ', `${BACK_URL}/${data.content}`);
+    //console.log('Chat--result: ', `${BACK_URL}/${data.content}`);
     return data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') ? (
       <>
         <img src={`${BACK_URL}/${data.content}`} style={{ maxHeight: 200 }} />

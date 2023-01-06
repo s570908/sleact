@@ -2,7 +2,7 @@ import ChatBox from '@components/ChatBox';
 import ChatList from '@components/ChatList';
 import useInput from '@hooks/useInput';
 import useSocket from '@hooks/useSocket';
-import Workspace from '@layouts/Workspace';
+//import Workspace from '@layouts/Workspace';
 import { DragOver } from '@pages/Channel/styles';
 import { Header, Container } from '@pages/DirectMessage/styles';
 import { IDM } from '@typings/db';
@@ -28,12 +28,16 @@ const DirectMessage = () => {
     mutate: mutateChat,
     setSize,
   } = useSWRInfinite<IDM[]>(
-    (index) => `/api/workspaces/${workspace}/dms/${id}/chats?perPage=${PAGE_SIZE}&page=${index + 1}`,
+    (index) => {
+      console.log('useSWRInfinite--getKey.index: ', index);
+      return `/api/workspaces/${workspace}/dms/${id}/chats?perPage=${PAGE_SIZE}&page=${index + 1}`;
+    },
     fetcher,
     {
       onSuccess(data) {
-        console.log('DM--chats: ', DataView);
+        console.log('DM--chats: ', data);
         if (data?.length === 1) {
+          // 로딩 시에는 스크롤바를 제일 아래로 내린다.
           setTimeout(() => {
             scrollbarRef.current?.scrollToBottom();
           }, 100);
@@ -45,6 +49,23 @@ const DirectMessage = () => {
   const scrollbarRef = useRef<Scrollbars>(null);
   const [dragOver, setDragOver] = useState(false);
 
+  /*
+  useSWRInfinite
+  
+   optional chaining ?.[i] 사용됨: array?.[i]  좌측 operand가 null undefined 이 아니면 array[i]를 가져와라.
+   chatData는 최대 20개의 chat을 갖고 있는 array이다.
+   chatDat[0] 에 20개의 chat
+   chatDat[1] 에 20개의 chat
+   chatDat[2] 에 20개의 chat
+   chatDat[3] 에 4개의 chat
+    chatData = 
+    [ 
+      [{id:1}, ..., {id:20}], 
+      [{id:21}, ..., {id:30}], 
+      [{id:31}, ..., {id:40}], 
+      [{id:41}, ..., {id:44}]
+    ]
+  */
   const isEmpty = chatData?.[0]?.length === 0;
   const isReachingEnd = isEmpty || (chatData && chatData[chatData.length - 1]?.length < PAGE_SIZE);
 
@@ -52,6 +73,14 @@ const DirectMessage = () => {
     (e) => {
       e.preventDefault();
       if (chat?.trim() && chatData) {
+        /*
+        // 서버에 chat data를 보내기 전에 chat을 미리 만들어서 cache에 저장하여 채팅창에 렌더링되게 한다.
+        // cache에 저장하기 위해서 mutateChat(callback)을 사용한다. callback을 수행시켜서 리턴된 값으로 캐시를 업데이트한다.
+          callback(prev) {
+              ...prev를 이용하여 prev의 맨 앞에 미리 만들어진 chat을 추가하여 변형시키고...
+              return prev
+          }
+        */
         const savedChat = chat;
         mutateChat((prevChatData) => {
           prevChatData?.[0].unshift({
@@ -64,11 +93,13 @@ const DirectMessage = () => {
             createdAt: new Date(),
           });
           return prevChatData;
+          // shouldRevalidate: false 이어야 한다.
         }, false).then(() => {
           localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString());
           setChat('');
           if (scrollbarRef.current) {
             console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+            // 채팅을 입력하였을 때 스크롤을 제일 아래로 내린다.
             scrollbarRef.current.scrollToBottom();
           }
         });
@@ -167,6 +198,8 @@ const DirectMessage = () => {
     return null;
   }
 
+  // chatData.reverse() : chatData가 변한다. 즉 chatData 자체를 reverse한다.
+  // [].concat(...chatData).reverse() : 새로운 chatData를 만든 후에 이것을 reverse한다.
   const chatSections = makeSection(chatData ? ([] as IDM[]).concat(...chatData).reverse() : []);
 
   return (

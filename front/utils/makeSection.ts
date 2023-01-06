@@ -13,3 +13,28 @@ export default function makeSection<T extends IDM | IChat>(chatList: T[]) {
   });
   return sections;
 }
+
+/*
+chatList = [ (id:1, date:'2021-02-13'), (id:2, date:'2021-02-14'), (id:3, date:'2021-02-15'), (id:4, date:'2021-02-13'), (id:5, date:'2021-02-13')]
+sections = { 
+  '2021-02-13': [1, 4, 5],
+  '2021-02-14': [2],
+  '2021-02-15': [3],
+}
+sections type { [date: string]: [chat] }
+
+const sections = { 
+  '2021-02-13': [1, 4, 5],
+  '2021-02-14': [2],
+  '2021-02-15': [3],
+}
+
+console.log(Object.entries(sections))
+
+[ 
+  ["2021-02-13", [1, 4, 5]], 
+  ["2021-02-14", [2]], 
+  ["2021-02-15", [3]] 
+]
+
+*/

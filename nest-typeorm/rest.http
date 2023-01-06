@@ -1,11 +1,6 @@
 ### 
-POST http://localhost:3095/api/users/login
+GET  http://localhost:3095/api/workspaces/slack/dms/12/chats?perPage=20&page=1
 Content-Type: application/json
-
-{
-  "email": "client0@client.com",
-  "password": "121212" 
-}
 
 ### 
 # @prompt email

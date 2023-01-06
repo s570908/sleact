@@ -68,7 +68,12 @@ const ChatBox: FC<Props> = ({ onSubmitForm, chat, onChangeChat, placeholder, dat
           <Mention
             appendSpaceOnAdd
             trigger="@"
-            data={data?.map((v) => ({ id: v.id, display: v.nickname })) || []}
+            data={
+              data?.map((v) => {
+                //console.log('ChatBox-Mention: ', data);
+                return { id: v.id, display: v.nickname };
+              }) || []
+            }
             renderSuggestion={renderUserSuggestion}
           />
         </MentionsTextarea>

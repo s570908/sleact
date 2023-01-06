@@ -3,7 +3,7 @@ import ChatList from '@components/ChatList';
 import InviteChannelModal from '@components/InviteChannelModal';
 import useInput from '@hooks/useInput';
 import useSocket from '@hooks/useSocket';
-import Workspace from '@layouts/Workspace';
+//import Workspace from '@layouts/Workspace';
 import { Header, Container, DragOver } from '@pages/Channel/styles';
 import { IChannel, IChat, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
@@ -62,33 +62,33 @@ const Channel = () => {
       e.preventDefault();
       console.log('submit');
       setChat('');
-      // if (chat?.trim() && chatData && channelData && userData) {
-      //   const savedChat = chat;
-      //   mutateChat((prevChatData) => {
-      //     prevChatData?.[0].unshift({
-      //       id: (chatData[0][0]?.id || 0) + 1,
-      //       content: savedChat,
-      //       UserId: userData.id,
-      //       User: userData,
-      //       createdAt: new Date(),
-      //       ChannelId: channelData.id,
-      //       Channel: channelData,
-      //     });
-      //     return prevChatData;
-      //   }, false).then(() => {
-      //     localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
-      //     setChat('');
-      //     if (scrollbarRef.current) {
-      //       console.log('scrollToBottom!', scrollbarRef.current?.getValues());
-      //       scrollbarRef.current.scrollToBottom();
-      //     }
-      //   });
-      //   axios
-      //     .post(`/api/workspaces/${workspace}/channels/${channel}/chats`, {
-      //       content: savedChat,
-      //     })
-      //     .catch(console.error);
-      // }
+      if (chat?.trim() && chatData && channelData && userData) {
+        const savedChat = chat;
+        mutateChat((prevChatData) => {
+          prevChatData?.[0].unshift({
+            id: (chatData[0][0]?.id || 0) + 1,
+            content: savedChat,
+            UserId: userData.id,
+            User: userData,
+            createdAt: new Date(),
+            ChannelId: channelData.id,
+            Channel: channelData,
+          });
+          return prevChatData;
+        }, false).then(() => {
+          localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
+          setChat('');
+          if (scrollbarRef.current) {
+            console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+            scrollbarRef.current.scrollToBottom();
+          }
+        });
+        axios
+          .post(`/api/workspaces/${workspace}/channels/${channel}/chats`, {
+            content: savedChat,
+          })
+          .catch(console.error);
+      }
     },
     [chat, workspace, channel, channelData, userData, chatData, mutateChat, setChat],
   );
