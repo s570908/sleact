@@ -20,11 +20,13 @@ const ChatList: VFC<Props> = ({ scrollbarRef, isReachingEnd, isEmpty, chatSectio
         // 스크롤이 맨위에 도달하면,
         // chatData가 비었는지 혹은 스크롤이 맨 아래에 도달했나를 체크하고
         // 그도 저도 아니면,  page를 하나 더 증가시킨다.
-        // page 하나가 더 증가되고 나서 스크롤을 맨 위로 올리면 안된다. 지금 보고 있는 chat에서 약간만 스크롤을 올려 준다.
-        // 지금 현재 scroll height에서 scrollbar의 scroll height를 뺀다.
+        // page 하나가 더 증가되고 나서 스크롤을 맨 위로 올리면 안된다. 지금 보고 있는 chat에서 스크롤이 머물러 있도록 해야 한다.
+        // 결론은, 지금 현재 scroll height에서 scrollbar의 scroll height를 뺀다.
+        // 관찰: 스크롤이
         setSize((size) => size + 1).then(() => {
-          // console.log('values: ', values);
-          // console.log('scrollbarRef.current?.getScrollHeight(): ', scrollbarRef.current?.getScrollHeight());
+          // console.log('setSize()가 fulfill되고 then() 수행 시작입니다.');
+          // console.log('values: ', values); // <Scrollbar>를 렌더링하기 전의 값.
+          // console.log('scrollbarRef.current?.getScrollHeight(): ', scrollbarRef.current?.getScrollHeight()); //<Scrollbar>를 렌더링한 후의 값.
           // console.log('values.scrollHeight: ', values.scrollHeight);
           scrollbarRef.current?.scrollTop(scrollbarRef.current?.getScrollHeight() - values.scrollHeight);
         });
@@ -32,6 +34,8 @@ const ChatList: VFC<Props> = ({ scrollbarRef, isReachingEnd, isEmpty, chatSectio
     },
     [setSize, scrollbarRef, isReachingEnd, isEmpty],
   );
+
+  //console.log('지금 <Scrollbars> 컴포넌트가 렌더되고 있습니다.');
 
   return (
     <ChatZone>

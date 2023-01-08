@@ -73,12 +73,12 @@ const DirectMessage = () => {
     (e) => {
       e.preventDefault();
       if (chat?.trim() && chatData) {
-        /*
+        /* optimistic UI
         // 서버에 chat data를 보내기 전에 chat을 미리 만들어서 cache에 저장하여 채팅창에 렌더링되게 한다.
         // cache에 저장하기 위해서 mutateChat(callback)을 사용한다. callback을 수행시켜서 리턴된 값으로 캐시를 업데이트한다.
           callback(prev) {
-              ...prev를 이용하여 prev의 맨 앞에 미리 만들어진 chat을 추가하여 변형시키고...
-              return prev
+              prevChatData를 이용하여 prevChatData의 맨 앞에 미리 만들어진 chat을 추가하여 변형시키고...
+              return prevChatData
           }
         */
         const savedChat = chat;
@@ -93,7 +93,7 @@ const DirectMessage = () => {
             createdAt: new Date(),
           });
           return prevChatData;
-          // shouldRevalidate: false 이어야 한다.
+          // options: false 이어야 한다.
         }, false).then(() => {
           localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString());
           setChat('');
@@ -113,22 +113,34 @@ const DirectMessage = () => {
     [chat, workspace, id, myData, userData, chatData, mutateChat, setChat],
   );
 
+  // 서버가 가장 최신 데이터를 이벤트로 보내주었으므로 캐시를 갱신하면 된다.
   const onMessage = useCallback(
     (data: IDM) => {
+      //console.log('onMessage entered');
       if (data.SenderId === Number(id) && myData.id !== Number(id)) {
-        mutateChat((chatData) => {
-          chatData?.[0].unshift(data);
-          return chatData;
-        }, false).then(() => {
+        // id는 상대방id.  상대방이 전송한 chat일 경우
+        // 여기서 revalidate option은 true이어야 한다. https://swr.vercel.app/docs/mutation
+        // revalidate = true: should the cache revalidate once the asynchronous update resolves.
+        mutateChat(
+          (chatData) => {
+            chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(dm)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
+            return chatData;
+          },
+          { revalidate: true },
+        ).then(() => {
           if (scrollbarRef.current) {
+            // client의 bottom: scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop()
+            // scroll의 bottom: scrollbarRef.current.getScrollHeight()
+            // client의 bottom이 scroll의 bottom보다 150이하일 경우에는 client를 아래로 내린다.
             if (
               scrollbarRef.current.getScrollHeight() <
               scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
             ) {
               console.log('scrollToBottom!', scrollbarRef.current?.getValues());
-              setTimeout(() => {
-                scrollbarRef.current?.scrollToBottom();
-              }, 100);
+              scrollbarRef.current?.scrollToBottom();
+              // setTimeout(() => {
+              //   scrollbarRef.current?.scrollToBottom();
+              // }, 100);
             } else {
               toast.success('새 메시지가 도착했습니다.', {
                 onClick() {

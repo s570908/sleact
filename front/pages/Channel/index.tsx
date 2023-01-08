@@ -60,7 +60,7 @@ const Channel = () => {
   const onSubmitForm = useCallback(
     (e) => {
       e.preventDefault();
-      console.log('submit');
+      //console.log('submit');
       setChat('');
       if (chat?.trim() && chatData && channelData && userData) {
         const savedChat = chat;
