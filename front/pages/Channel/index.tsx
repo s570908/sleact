@@ -87,22 +87,33 @@ const Channel = () => {
           .post(`/api/workspaces/${workspace}/channels/${channel}/chats`, {
             content: savedChat,
           })
+          .then(() => {
+            mutateChat();
+          })
           .catch(console.error);
       }
     },
     [chat, workspace, channel, channelData, userData, chatData, mutateChat, setChat],
   );
 
+  // 서버로부터 'message' 이벤트를 받았다.
   const onMessage = useCallback(
     (data: IChat) => {
+      // 내가 아닌 남이 보낸 chat(data.UserId !== userData?.id)이어야 한다. 왜냐하면 내가 보내는 chat은 optimistic UI로 cache를 이미 업데이트했기 때문에
+      // 서버로부터 이벤트로 받는 나의 chat로는 cache를 업데이트하면 안된다.
+      // 남이 보낸 채널이 내가 보고 있는 채널인지 체크한다: data.Channel.name === channel
+      //
       if (
         data.Channel.name === channel &&
         (data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') || data.UserId !== userData?.id)
       ) {
-        mutateChat((chatData) => {
-          chatData?.[0].unshift(data);
-          return chatData;
-        }, false).then(() => {
+        mutateChat(
+          (chatData) => {
+            chatData?.[0].unshift(data);
+            return chatData;
+          },
+          { revalidate: true },
+        ).then(() => {
           if (scrollbarRef.current) {
             if (
               scrollbarRef.current.getScrollHeight() <
@@ -229,3 +240,41 @@ const Channel = () => {
 };
 
 export default Channel;
+
+/* Optimistic UI
+0초   A: 안녕 // Optimistic UI
+1초   B: 안녕
+2초   A: 안녕 // 실제 서버가 전송
+
+A 화면-- A의 네트워크를 3G slow로 변경햐여 실험을 하면 아래의 현상을 볼 수 있다.
+0초   A: 안녕 // Optimistic UI
+1초   B: 안녕
+
+B 화면--
+1초   B: 안녕
+2초   A: 안녕 // 실제 서버가 전송
+
+A가 입력한 chat을 서버로 보내고 난 후에, 반드시 서버로 부터 chat을 받아서 다시 A화면을 렌더링해야 한다. 즉, mutateChat()을 수행시켜야 한다.
+        axios
+          .post(`/api/workspaces/${workspace}/channels/${channel}/chats`, {
+            content: savedChat,
+          })
+          .then(() => {
+            mutateChat(); //   <====== mutateChat()을 수행시켜야 한다.
+          })
+          .catch(console.error);
+
+A 화면이
+
+0초   A: 안녕 // Optimistic UI
+1초   B: 안녕
+
+에서 
+
+1초   B: 안녕
+2초   A: 안녕 // 실제 서버가 전송
+
+로 전환된다.
+
+결과적으로 A화면과 B화면은 일치하게 된다. 
+*/

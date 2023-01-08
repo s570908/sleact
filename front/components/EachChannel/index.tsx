@@ -35,3 +35,6 @@ const EachChannel: VFC<Props> = ({ channel }) => {
 };
 
 export default EachChannel;
+
+// 특정 링크에 스타일을 넣어 줄 수 있다.
+// ⭐⭐⭐ 이것이 바로 Link와 NavLink의 가장 큰 차이점이다.

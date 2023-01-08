@@ -61,3 +61,21 @@ const Chat: FC<Props> = memo(({ data }) => {
 });
 
 export default Chat;
+
+// Type guard: 두개 이상의 타잎이 겹쳐있을 때 타잎을 찾아내는 방법.
+// 'Sender' in data
+/* 
+function a(b: number | string | number[]) {
+  if(typeof b === 'number') {
+    b.toFixed() // OK
+  }
+  if(typeof b ==='string) {
+    b.slice() // OK
+  }
+  if(Array.isArray(b)) {
+    b.forEach(()=>{}) // OK
+  }
+  b.toFixed() // 에러
+  b.slice() // 에러
+}
+*/
