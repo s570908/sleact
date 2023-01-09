@@ -100,10 +100,13 @@ if (isDevelopment && config.plugins) {
       },
     }),
   );
-  config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: false }));
+  // 개발모드에서는 bundle analyzer를 서버에 따로 띄운다
+  config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: true }));
 }
 if (!isDevelopment && config.plugins) {
+  // 현재의 plugin들은 별반 효과가 없으나 옛날 plugin들은 space 최적화가 잘 된다.
   config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
+  // 배포모드에서는 bundle analyzer를 서버에 따로 띄울 수가 없기 때문에 html형식으로 만들어 준다.
   config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'static' }));
 }
 
