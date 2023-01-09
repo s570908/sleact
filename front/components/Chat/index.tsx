@@ -18,6 +18,7 @@ const Chat: FC<Props> = memo(({ data }) => {
 
   const result = useMemo<(string | JSX.Element)[] | JSX.Element>(() => {
     //console.log('Chat--result: ', `${BACK_URL}/${data.content}`);
+    // 전달된 chat data가 upload\\서버주소 로 시작을 하면 image tag로 바꾼다.
     return data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') ? (
       <>
         <img src={`${BACK_URL}/${data.content}`} style={{ maxHeight: 200 }} />

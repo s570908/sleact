@@ -95,7 +95,7 @@ const DirectMessage = () => {
           return prevChatData;
           // options: false 이어야 한다.
         }, false).then(() => {
-          localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString());
+          localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           setChat('');
           if (scrollbarRef.current) {
             console.log('scrollToBottom!', scrollbarRef.current?.getValues());
@@ -167,7 +167,7 @@ const DirectMessage = () => {
   }, [socket, onMessage]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString());
+    localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // DM 페이지의 로딩 시점을 저장
   }, [workspace, id]);
 
   const onDrop = useCallback(
@@ -196,7 +196,7 @@ const DirectMessage = () => {
       }
       axios.post(`/api/workspaces/${workspace}/dms/${id}/images`, formData).then(() => {
         setDragOver(false);
-        localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString());
+        localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // image 업로드 시점을 저장
         mutateChat();
       });
     },

@@ -76,7 +76,7 @@ const Channel = () => {
           });
           return prevChatData;
         }, false).then(() => {
-          localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
+          localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           setChat('');
           if (scrollbarRef.current) {
             console.log('scrollToBottom!', scrollbarRef.current?.getValues());
@@ -102,7 +102,9 @@ const Channel = () => {
       // 내가 아닌 남이 보낸 chat(data.UserId !== userData?.id)이어야 한다. 왜냐하면 내가 보내는 chat은 optimistic UI로 cache를 이미 업데이트했기 때문에
       // 서버로부터 이벤트로 받는 나의 chat로는 cache를 업데이트하면 안된다.
       // 남이 보낸 채널이 내가 보고 있는 채널인지 체크한다: data.Channel.name === channel
-      //
+      // 내가 보낸 chat은 서버로부터 이벤트로 받을 때 무시한다. 이미 optimistic UI로 렌더가 되었기 때문이다. 그런데
+      // image drag and drop에서는 optimistic UI가 적용되어 있지 않았기 때문에 서버로부터 이벤트로 받은 image는 렌더 처리를 해주어야 한다.
+      // (data.content.startsWith('uploads\\') || data.content.startsWith('uploads/')
       if (
         data.Channel.name === channel &&
         (data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') || data.UserId !== userData?.id)
@@ -146,9 +148,8 @@ const Channel = () => {
   }, [socket, onMessage]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
+    localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // channel 페이지의 로딩 시점을 저장
   }, [workspace, channel]);
-
   const onClickInviteChannel = useCallback(() => {
     setShowInviteChannelModal(true);
   }, []);
@@ -180,7 +181,7 @@ const Channel = () => {
       }
       axios.post(`/api/workspaces/${workspace}/channels/${channel}/images`, formData).then(() => {
         setDragOver(false);
-        localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
+        localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // image 업로드 시점을 저장
       });
     },
     [workspace, channel],
@@ -277,4 +278,33 @@ A 화면이
 로 전환된다.
 
 결과적으로 A화면과 B화면은 일치하게 된다. 
+*/
+
+/*
+image file을 선택하여 업로드하기
+
+<input type=”file” multiple onChange={onChangeFile} />
+
+const onChangeFile = useCallback(
+  (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    if (e.target.files) {
+      for (let i = 0; i < e.target.files.length; i++) {
+        console.log(e.target.files[i]);
+        if (e.target.files[i].kind === 'file') {
+          const file = e.dataTransfer.files[i].getAsFile();
+          console.log(e, '.... file[' + i + '].name = ' + file.name);
+          formData.append('image', file);
+        }
+      }
+    }
+    axios.post(`/api/workspaces/${workspace}/channels/${channel}/images`, formData).then(() => {
+      setDragOver(false);
+      localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
+    });
+  },
+  [workspace, channel],
+);
+
 */
