@@ -5,7 +5,7 @@ import useInput from '@hooks/useInput';
 import useSocket from '@hooks/useSocket';
 //import Workspace from '@layouts/Workspace';
 import { Header, Container, DragOver } from '@pages/Channel/styles';
-import { IChannel, IChat, IUser } from '@typings/db';
+import { IChannel, IChat, IDM, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import makeSection from '@utils/makeSection';
 import axios from 'axios';
@@ -175,12 +175,29 @@ const Channel = () => {
     [channel, userData, workspace, mutateChat],
   );
 
+  // 서버가 가장 최신 데이터를 이벤트로 보내주었으므로 캐시를 갱신하면 된다.
+  const onMessageDM = useCallback(
+    (data: IDM) => {
+      console.log('onMessageDM entered--chat이 dm 이벤트로 들어 왔다. ', '보낸자: ', data.SenderId);
+      const { date } = getDateInVar(workspace, String(data.SenderId));
+      setDateInVar(workspace, String(data.SenderId), date);
+    },
+    [workspace],
+  );
+
   useEffect(() => {
     socket?.on('message', onMessage);
     return () => {
       socket?.off('message', onMessage);
     };
   }, [socket, onMessage]);
+
+  useEffect(() => {
+    socket?.on('dm', onMessageDM);
+    return () => {
+      socket?.off('dm', onMessageDM);
+    };
+  }, [socket, onMessageDM]);
 
   useEffect(() => {
     setDateInVar(workspace, channel); // channel 페이지의 로딩 시점을 저장
