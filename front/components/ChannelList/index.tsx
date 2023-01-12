@@ -46,3 +46,5 @@ const ChannelList: FC<Props> = () => {
 };
 
 export default ChannelList;
+
+// <EachChannel.../> : map을 사용할 때 return 되는 component는 분리하는 것이 좋다.

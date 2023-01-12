@@ -4,6 +4,7 @@ import React, { useEffect, VFC } from 'react';
 import { useParams } from 'react-router';
 import { NavLink, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
+import { getDateInVar } from '@utils/apollo';
 
 interface Props {
   channel: IChannel;
@@ -14,7 +15,9 @@ const EachChannel: VFC<Props> = ({ channel }) => {
   const { data: userData } = useSWR<IUser>('/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
-  const date = localStorage.getItem(`${workspace}-${channel.name}`) || 0;
+  const { date } = getDateInVar(workspace, channel.name);
+  console.log('EachChannel--channel, date: ', channel.name, date);
+  //const date = localStorage.getItem(`${workspace}-${channel.name}`) || 0;
   const { data: count, mutate } = useSWR<number>(
     userData ? `/api/workspaces/${workspace}/channels/${channel.name}/unreads?after=${date}` : null,
     fetcher,

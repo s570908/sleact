@@ -16,6 +16,7 @@ import { Redirect } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
+import { setDateInVar } from '@utils/apollo';
 
 const PAGE_SIZE = 20;
 const Channel = () => {
@@ -75,19 +76,25 @@ const Channel = () => {
             Channel: channelData,
           });
           return prevChatData;
+          // options: false 이어야 한다. revalidate하지 않는다.
+          // 즉 서버로 부터 데이터를 가져와서 캐시를 업데이트하지 않는다.
+          // 서버와 캐시의 데이터가 불일치하도록 놔둔다.
         }, false).then(() => {
-          localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // chat 입력 시점을 저장
+          setDateInVar(workspace, channel); // chat 입력 시점을 저장
+          //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           setChat('');
           if (scrollbarRef.current) {
             console.log('scrollToBottom!', scrollbarRef.current?.getValues());
             scrollbarRef.current.scrollToBottom();
           }
         });
+        // 서버에 입력된 chat 전송
         axios
           .post(`/api/workspaces/${workspace}/channels/${channel}/chats`, {
             content: savedChat,
           })
           .then(() => {
+            // 서버에 요청하여 chat list를 전달받는다.
             mutateChat();
           })
           .catch(console.error);
@@ -148,8 +155,14 @@ const Channel = () => {
   }, [socket, onMessage]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // channel 페이지의 로딩 시점을 저장
+    setDateInVar(workspace, channel); // channel 페이지의 로딩 시점을 저장
+    // const key = `${workspace}-${channel}`;
+    // const time = new Date().getTime().toString();
+    // localStorage.setItem(key, time); // channel 페이지의 로딩 시점을 저장
+    // const prevDates = dateInVar();
+    // dateInVar({ ...prevDates, key: time });
   }, [workspace, channel]);
+
   const onClickInviteChannel = useCallback(() => {
     setShowInviteChannelModal(true);
   }, []);
@@ -181,7 +194,8 @@ const Channel = () => {
       }
       axios.post(`/api/workspaces/${workspace}/channels/${channel}/images`, formData).then(() => {
         setDragOver(false);
-        localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // image 업로드 시점을 저장
+        setDateInVar(workspace, channel); // image 업로드 시점을 저장
+        //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // image 업로드 시점을 저장
       });
     },
     [workspace, channel],

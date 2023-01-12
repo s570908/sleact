@@ -16,6 +16,7 @@ import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
+import { setDateInVar, getDateInVar } from '@utils/apollo';
 
 const PAGE_SIZE = 20;
 const DirectMessage = () => {
@@ -93,9 +94,12 @@ const DirectMessage = () => {
             createdAt: new Date(),
           });
           return prevChatData;
-          // options: false 이어야 한다.
+          // options: false 이어야 한다. revalidate하지 않는다.
+          // 즉 서버로 부터 데이터를 가져와서 캐시를 업데이트하지 않는다.
+          // 서버와 캐시의 데이터가 불일치하도록 놔둔다.
         }, false).then(() => {
-          localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // chat 입력 시점을 저장
+          setDateInVar(workspace, id); // chat 입력 시점을 저장
+          //localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           setChat('');
           if (scrollbarRef.current) {
             console.log('scrollToBottom!', scrollbarRef.current?.getValues());
@@ -103,11 +107,13 @@ const DirectMessage = () => {
             scrollbarRef.current.scrollToBottom();
           }
         });
+        // 입력된 chat을 서버에 전송
         axios
           .post(`/api/workspaces/${workspace}/dms/${id}/chats`, {
             content: chat,
           })
           .then(() => {
+            // 서버에 요청하여 chat list를 전달받는다.
             mutateChat();
           })
           .catch(console.error);
@@ -119,18 +125,32 @@ const DirectMessage = () => {
   // 서버가 가장 최신 데이터를 이벤트로 보내주었으므로 캐시를 갱신하면 된다.
   const onMessage = useCallback(
     (data: IDM) => {
-      //console.log('onMessage entered');
+      console.log(
+        'onMessage entered--chat이 dm 이벤트로 들어 왔다. ',
+        '보낸자: ',
+        data.SenderId,
+        '현재  EachDM Chat User: ',
+        id,
+        '로그인 user: ',
+        myData.id,
+      );
+      if (data.SenderId !== Number(id)) {
+        const { date } = getDateInVar(workspace, String(data.SenderId));
+        setDateInVar(workspace, id, date);
+      }
       if (data.SenderId === Number(id) && myData.id !== Number(id)) {
-        // id는 상대방id.  상대방이 전송한 chat일 경우
+        // id는 상대방id.  내가 전송한 chat이 아니고 상대방이 전송한 chat일 경우
         // 여기서 revalidate option은 true이어야 한다. https://swr.vercel.app/docs/mutation
         // revalidate = true: should the cache revalidate once the asynchronous update resolves.
-        mutateChat(
-          (chatData) => {
-            chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(dm)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
-            return chatData;
-          },
-          { revalidate: true },
-        ).then(() => {
+        console.log('내가 아닌 상대방이 전송한 chat이 이벤트로 들어 왔다.');
+        setDateInVar(workspace, id);
+        mutateChat().then(() => {
+          // (chatData) => {
+          //   chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(data)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
+          //   return chatData;
+          // },
+          //false,
+          // { revalidate: true },
           if (scrollbarRef.current) {
             // client의 bottom: scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop()
             // scroll의 bottom: scrollbarRef.current.getScrollHeight()
@@ -156,7 +176,7 @@ const DirectMessage = () => {
         });
       }
     },
-    [id, myData, mutateChat],
+    [id, myData, workspace, mutateChat],
   );
 
   useEffect(() => {
@@ -167,7 +187,8 @@ const DirectMessage = () => {
   }, [socket, onMessage]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // DM 페이지의 로딩 시점을 저장
+    setDateInVar(workspace, id);
+    //localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // DM 페이지의 로딩 시점을 저장
   }, [workspace, id]);
 
   const onDrop = useCallback(
@@ -196,7 +217,8 @@ const DirectMessage = () => {
       }
       axios.post(`/api/workspaces/${workspace}/dms/${id}/images`, formData).then(() => {
         setDragOver(false);
-        localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // image 업로드 시점을 저장
+        setDateInVar(workspace, id);
+        //localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // image 업로드 시점을 저장
         mutateChat();
       });
     },
