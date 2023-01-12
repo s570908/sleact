@@ -5,7 +5,7 @@ import useSocket from '@hooks/useSocket';
 //import Workspace from '@layouts/Workspace';
 import { DragOver } from '@pages/Channel/styles';
 import { Header, Container } from '@pages/DirectMessage/styles';
-import { IDM } from '@typings/db';
+import { IChat, IDM } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import makeSection from '@utils/makeSection';
 import axios from 'axios';
@@ -173,12 +173,34 @@ const DirectMessage = () => {
     [id, myData, workspace, mutateChat],
   );
 
+  const onMessageChannel = useCallback(
+    (data: IChat) => {
+      console.log(
+        'onMessage entered--chat이 message 이벤트로 들어 왔다. ',
+        '보낸 자: ',
+        data.UserId,
+        ' 보낸 채널: ',
+        data.Channel.name,
+      );
+      const { date } = getDateInVar(workspace, String(data.Channel.name));
+      setDateInVar(workspace, String(data.Channel.name), date);
+    },
+    [workspace],
+  );
+
   useEffect(() => {
     socket?.on('dm', onMessage);
     return () => {
       socket?.off('dm', onMessage);
     };
   }, [socket, onMessage]);
+
+  useEffect(() => {
+    socket?.on('message', onMessageChannel);
+    return () => {
+      socket?.off('message', onMessageChannel);
+    };
+  }, [socket, onMessageChannel]);
 
   useEffect(() => {
     setDateInVar(workspace, id);

@@ -175,7 +175,6 @@ const Channel = () => {
     [channel, userData, workspace, mutateChat],
   );
 
-  // 서버가 가장 최신 데이터를 이벤트로 보내주었으므로 캐시를 갱신하면 된다.
   const onMessageDM = useCallback(
     (data: IDM) => {
       console.log('onMessageDM entered--chat이 dm 이벤트로 들어 왔다. ', '보낸자: ', data.SenderId);
