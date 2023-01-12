@@ -16,7 +16,7 @@ import { Redirect } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
-import { setDateInVar } from '@utils/apollo';
+import { setDateInVar, getDateInVar } from '@utils/apollo';
 
 const PAGE_SIZE = 20;
 const Channel = () => {
@@ -34,6 +34,7 @@ const Channel = () => {
     fetcher,
     {
       onSuccess(data) {
+        console.log('Channel--chats: ', data);
         if (data?.length === 1) {
           setTimeout(() => {
             scrollbarRef.current?.scrollToBottom();
@@ -50,6 +51,24 @@ const Channel = () => {
   const [showInviteChannelModal, setShowInviteChannelModal] = useState(false);
   const scrollbarRef = useRef<Scrollbars>(null);
   const [dragOver, setDragOver] = useState(false);
+
+  /*
+  useSWRInfinite
+  
+   optional chaining ?.[i] 사용됨: array?.[i]  좌측 operand가 null undefined 이 아니면 array[i]를 가져와라.
+   chatData는 최대 20개의 chat을 갖고 있는 array이다.
+   chatDat[0] 에 20개의 chat
+   chatDat[1] 에 20개의 chat
+   chatDat[2] 에 20개의 chat
+   chatDat[3] 에 4개의 chat
+    chatData = 
+    [ 
+      [{id:1}, ..., {id:20}], 
+      [{id:21}, ..., {id:30}], 
+      [{id:31}, ..., {id:40}], 
+      [{id:41}, ..., {id:44}]
+    ]
+  */
 
   const isEmpty = chatData?.[0]?.length === 0;
   const isReachingEnd = isEmpty || (chatData && chatData[chatData.length - 1]?.length < PAGE_SIZE);
@@ -80,11 +99,10 @@ const Channel = () => {
           // 즉 서버로 부터 데이터를 가져와서 캐시를 업데이트하지 않는다.
           // 서버와 캐시의 데이터가 불일치하도록 놔둔다.
         }, false).then(() => {
-          setDateInVar(workspace, channel); // chat 입력 시점을 저장
-          //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           setChat('');
           if (scrollbarRef.current) {
             console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+            // 채팅을 입력하였을 때 스크롤을 제일 아래로 내린다.
             scrollbarRef.current.scrollToBottom();
           }
         });
@@ -96,6 +114,8 @@ const Channel = () => {
           .then(() => {
             // 서버에 요청하여 chat list를 전달받는다.
             mutateChat();
+            setDateInVar(workspace, channel); // chat 입력 시점을 저장
+            //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           })
           .catch(console.error);
       }
@@ -103,26 +123,34 @@ const Channel = () => {
     [chat, workspace, channel, channelData, userData, chatData, mutateChat, setChat],
   );
 
-  // 서버로부터 'message' 이벤트를 받았다.
+  // 서버가 가장 최신 데이터를 이벤트로 보내주었으므로 캐시를 갱신하면 된다.
   const onMessage = useCallback(
     (data: IChat) => {
-      // 내가 아닌 남이 보낸 chat(data.UserId !== userData?.id)이어야 한다. 왜냐하면 내가 보내는 chat은 optimistic UI로 cache를 이미 업데이트했기 때문에
-      // 서버로부터 이벤트로 받는 나의 chat로는 cache를 업데이트하면 안된다.
-      // 남이 보낸 채널이 내가 보고 있는 채널인지 체크한다: data.Channel.name === channel
-      // 내가 보낸 chat은 서버로부터 이벤트로 받을 때 무시한다. 이미 optimistic UI로 렌더가 되었기 때문이다. 그런데
-      // image drag and drop에서는 optimistic UI가 적용되어 있지 않았기 때문에 서버로부터 이벤트로 받은 image는 렌더 처리를 해주어야 한다.
-      // (data.content.startsWith('uploads\\') || data.content.startsWith('uploads/')
+      console.log(
+        'onMessage entered--chat이 message 이벤트로 들어 왔다. ',
+        '보낸자: ',
+        data.UserId,
+        '현재  EachChannel channel 이름: ',
+        channel,
+        '로그인 user: ',
+        userData?.id,
+      );
+      // channel message를 전송한 channel 이 현재 보고 있는 channel이 아닐 경우
+      // wake up EachChannel of channel message를 전송한 channel
+      if (data.Channel.name !== channel) {
+        const { date } = getDateInVar(workspace, data.Channel.name);
+        setDateInVar(workspace, data.Channel.name, date);
+      }
+      // channel message를 전송한 channel 이 현재 보고 있는 channel 이고
+      // 이미지 업로드에 의한 이벤트이거나 혹은
+      // id는 상대방id.  내가 전송한 chat이 아니고 상대방이 전송한 chat일 경우
       if (
         data.Channel.name === channel &&
         (data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') || data.UserId !== userData?.id)
       ) {
-        mutateChat(
-          (chatData) => {
-            chatData?.[0].unshift(data);
-            return chatData;
-          },
-          { revalidate: true },
-        ).then(() => {
+        console.log('업로드 이미지이거나 혹은 내가 아닌 상대방이 전송한 채널 message 이벤트가 들어 왔다.');
+        setDateInVar(workspace, channel);
+        mutateChat().then(() => {
           if (scrollbarRef.current) {
             if (
               scrollbarRef.current.getScrollHeight() <
@@ -144,7 +172,7 @@ const Channel = () => {
         });
       }
     },
-    [channel, userData, mutateChat],
+    [channel, userData, workspace, mutateChat],
   );
 
   useEffect(() => {
@@ -156,11 +184,7 @@ const Channel = () => {
 
   useEffect(() => {
     setDateInVar(workspace, channel); // channel 페이지의 로딩 시점을 저장
-    // const key = `${workspace}-${channel}`;
-    // const time = new Date().getTime().toString();
     // localStorage.setItem(key, time); // channel 페이지의 로딩 시점을 저장
-    // const prevDates = dateInVar();
-    // dateInVar({ ...prevDates, key: time });
   }, [workspace, channel]);
 
   const onClickInviteChannel = useCallback(() => {
@@ -170,18 +194,18 @@ const Channel = () => {
   const onDrop = useCallback(
     (e) => {
       e.preventDefault();
-      console.log(e);
-      console.log('e.dataTransfer.items: ', e.dataTransfer.items);
-      console.log('e.dataTransfer.files: ', e.dataTransfer.files);
+      // console.log(e);
+      // console.log('e.dataTransfer.items: ', e.dataTransfer.items);
+      // console.log('e.dataTransfer.files: ', e.dataTransfer.files);
       const formData = new FormData();
       if (e.dataTransfer.items) {
         // Use DataTransferItemList interface to access the file(s)
         for (let i = 0; i < e.dataTransfer.items.length; i++) {
           // If dropped items aren't files, reject them
-          console.log(e.dataTransfer.items[i]);
+          //console.log(e.dataTransfer.items[i]);
           if (e.dataTransfer.items[i].kind === 'file') {
             const file = e.dataTransfer.items[i].getAsFile();
-            console.log(e, '.... file[' + i + '].name = ' + file.name);
+            //console.log(e, '.... file[' + i + '].name = ' + file.name);
             formData.append('image', file);
           }
         }
@@ -196,6 +220,8 @@ const Channel = () => {
         setDragOver(false);
         setDateInVar(workspace, channel); // image 업로드 시점을 저장
         //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // image 업로드 시점을 저장
+        //mutateChat(); // 이렇게 코멘트 처리하여야 한다. channel message 이벤트가 들어 올 때, 즉 onMeaasge()에서 서버에서 chat을 가져오고
+        //캐시를 업데이트한다. 즉, mutateChat().then(...)으로 처리한다.
       });
     },
     [workspace, channel],
@@ -203,7 +229,7 @@ const Channel = () => {
 
   const onDragOver = useCallback((e) => {
     e.preventDefault();
-    console.log('onDragOver: e', e);
+    //console.log('onDragOver: e', e);
     setDragOver(true);
   }, []);
 

@@ -23,10 +23,15 @@ export const setDateInVar = (workspace: string, chOrdmName: string, time?: strin
   console.log('newDates: ', newDates);
   console.log({ ...prevDates, [key]: dayjs(+time).format('YYYY-MM-DD-HH:mm:ss') });
   dateInVar({ ...prevDates, [key]: time });
+  console.log(
+    'dateInVar 확인: ',
+    getDateInVar(workspace, chOrdmName),
+    //dayjs(new Date(getDateInVar(workspace, chOrdmName).date)).format('YYYY-MM-DD-HH:mm:ss'),
+  );
 };
 
 export const getDateInVar = (workspace: string | undefined, chOrdmName: string): { date: string } => {
-  console.log('getDateInVar comes in');
+  //console.log('getDateInVar comes in');
   if (!workspace) {
     return { date: '0' };
   }

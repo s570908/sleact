@@ -139,19 +139,12 @@ const DirectMessage = () => {
         const { date } = getDateInVar(workspace, String(data.SenderId));
         setDateInVar(workspace, String(data.SenderId), date);
       }
+      // dm message를 전송한 dm 이 현재 보고 있는 dm 이고
+      // id는 상대방id.  내가 전송한 chat이 아니고 상대방이 전송한 chat일 경우
       if (data.SenderId === Number(id) && myData.id !== Number(id)) {
-        // id는 상대방id.  내가 전송한 chat이 아니고 상대방이 전송한 chat일 경우
-        // 여기서 revalidate option은 true이어야 한다. https://swr.vercel.app/docs/mutation
-        // revalidate = true: should the cache revalidate once the asynchronous update resolves.
         console.log('내가 아닌 상대방이 전송한 chat이 이벤트로 들어 왔다.');
         setDateInVar(workspace, id);
         mutateChat().then(() => {
-          // (chatData) => {
-          //   chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(data)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
-          //   return chatData;
-          // },
-          //false,
-          // { revalidate: true },
           if (scrollbarRef.current) {
             // client의 bottom: scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop()
             // scroll의 bottom: scrollbarRef.current.getScrollHeight()
