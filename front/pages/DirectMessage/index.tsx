@@ -134,9 +134,10 @@ const DirectMessage = () => {
         '로그인 user: ',
         myData.id,
       );
+      // dm message를 전송한 dm 이 현재 보고 있는 dm이 아닐 경우
       if (data.SenderId !== Number(id)) {
         const { date } = getDateInVar(workspace, String(data.SenderId));
-        setDateInVar(workspace, id, date);
+        setDateInVar(workspace, String(data.SenderId), date);
       }
       if (data.SenderId === Number(id) && myData.id !== Number(id)) {
         // id는 상대방id.  내가 전송한 chat이 아니고 상대방이 전송한 chat일 경우
@@ -194,9 +195,9 @@ const DirectMessage = () => {
   const onDrop = useCallback(
     (e) => {
       e.preventDefault();
-      console.log(e);
-      console.log('e.dataTransfer.items: ', e.dataTransfer.items);
-      console.log('e.dataTransfer.files: ', e.dataTransfer.files);
+      // console.log(e);
+      // console.log('e.dataTransfer.items: ', e.dataTransfer.items);
+      // console.log('e.dataTransfer.files: ', e.dataTransfer.files);
       const formData = new FormData();
       if (e.dataTransfer.items) {
         // Use DataTransferItemList interface to access the file(s)
@@ -204,14 +205,14 @@ const DirectMessage = () => {
           // If dropped items aren't files, reject them
           if (e.dataTransfer.items[i].kind === 'file') {
             const file = e.dataTransfer.items[i].getAsFile();
-            console.log('... file[' + i + '].name = ' + file.name);
+            //console.log('... file[' + i + '].name = ' + file.name);
             formData.append('image', file);
           }
         }
       } else {
         // Use DataTransfer interface to access the file(s)
         for (let i = 0; i < e.dataTransfer.files.length; i++) {
-          console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
+          //console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
           formData.append('image', e.dataTransfer.files[i]);
         }
       }
@@ -227,7 +228,7 @@ const DirectMessage = () => {
 
   const onDragOver = useCallback((e) => {
     e.preventDefault();
-    console.log('onDragOver: e', e);
+    //console.log('onDragOver: e', e);
     setDragOver(true);
   }, []);
 

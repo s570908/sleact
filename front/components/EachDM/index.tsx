@@ -6,7 +6,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
 import { dateInVar } from '@utils/apollo';
 import { useReactiveVar } from '@apollo/client';
-import dayjs from 'dayjs';
+//import dayjs from 'dayjs';
 
 interface Props {
   member: IUser;
@@ -21,9 +21,8 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
   const dates = useReactiveVar(dateInVar);
   const key = `${workspace}-${member.id}`;
   const date = dates?.[key] || '0';
-  //const { date } = getDateInVar(workspace, String(member.id));
   //const date = localStorage.getItem(`${workspace}-${member.id}`) || 0;
-  console.log('EachDM--member.id, date: ', member.id, date, dayjs(new Date(+date)).format('YYYY-MM-DD-HH:mm:ss'));
+  //console.log('EachDM--member.id, date: ', member.id, date, dayjs(new Date(+date)).format('YYYY-MM-DD-HH:mm:ss'));
   const { data: count, mutate } = useSWR<number>(
     userData ? `/api/workspaces/${workspace}/dms/${member.id}/unreads?after=${date}` : null,
     fetcher,
