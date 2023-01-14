@@ -1,5 +1,5 @@
 import { makeVar, ReactiveVar } from '@apollo/client';
-import dayjs from 'dayjs';
+// import dayjs from 'dayjs';
 
 interface IDate {
   [key: string]: string;
@@ -15,19 +15,19 @@ export const setDateInVar = (workspace: string, chOrdmName: string, time?: strin
   if (time === undefined) {
     time = new Date().getTime().toString();
   }
-  console.log('setDateInVar--key: ', key, 'time: ', time, dayjs(new Date(+time)).format('YYYY-MM-DD-HH:mm:ss'));
+  //console.log('setDateInVar--key: ', key, 'time: ', time, dayjs(new Date(+time)).format('YYYY-MM-DD-HH:mm:ss'));
   localStorage.setItem(key, time); // channel 페이지의 로딩 시점을 저장
   const prevDates = dateInVar();
-  const newDates = { ...prevDates, [key]: dayjs(+time).format('YYYY-MM-DD-HH:mm:ss') };
-  console.log('localStorage.getItem(key): ', localStorage.getItem(key));
-  console.log('newDates: ', newDates);
-  console.log({ ...prevDates, [key]: dayjs(+time).format('YYYY-MM-DD-HH:mm:ss') });
+  //const newDates = { ...prevDates, [key]: dayjs(+time).format('YYYY-MM-DD-HH:mm:ss') };
+  // console.log('localStorage.getItem(key): ', localStorage.getItem(key));
+  // console.log('newDates: ', newDates);
+  // console.log({ ...prevDates, [key]: dayjs(+time).format('YYYY-MM-DD-HH:mm:ss') });
   dateInVar({ ...prevDates, [key]: time });
-  console.log(
-    'dateInVar 확인: ',
-    getDateInVar(workspace, chOrdmName),
-    //dayjs(new Date(getDateInVar(workspace, chOrdmName).date)).format('YYYY-MM-DD-HH:mm:ss'),
-  );
+  // console.log(
+  //   'dateInVar 확인: ',
+  //   getDateInVar(workspace, chOrdmName),
+  //   //dayjs(new Date(getDateInVar(workspace, chOrdmName).date)).format('YYYY-MM-DD-HH:mm:ss'),
+  // );
 };
 
 export const getDateInVar = (workspace: string | undefined, chOrdmName: string): { date: string } => {
@@ -47,7 +47,7 @@ interface IDateOne {
 export const dateVarsList = new Map<string, ReactiveVar<IDateOne>>();
 
 for (const [key, value] of Object.entries(initDate)) {
-  console.log(`${key}: ${value}`);
+  //console.log(`${key}: ${value}`);
   if (!key || !value) {
     continue;
   }
@@ -60,7 +60,7 @@ export const setDateVarsList = (workspace: string, chOrdmName: string, time?: st
     time = new Date().getTime().toString();
   }
   //time = new Date().getTime().toString();
-  console.log('setDateVarsList--key: ', key, 'time: ', time, dayjs(new Date(+time)).format('YYYY-MM-DD-HH:mm:ss'));
+  //console.log('setDateVarsList--key: ', key, 'time: ', time, dayjs(new Date(+time)).format('YYYY-MM-DD-HH:mm:ss'));
   localStorage.setItem(key, time); // channel 페이지의 로딩 시점을 저장
 
   if (!dateVarsList.has(key)) {
@@ -70,12 +70,12 @@ export const setDateVarsList = (workspace: string, chOrdmName: string, time?: st
     tmpVar?.({ date: time });
   }
 
-  const { date } = getDateInVarsList(workspace, chOrdmName);
-  console.log(
-    'setDateVarsList--dateInVar 확인: ',
-    date,
-    date ? dayjs(new Date(Number(date))).format('YYYY-MM-DD-HH:mm:ss') : 'No Date',
-  );
+  // const { date } = getDateInVarsList(workspace, chOrdmName);
+  // console.log(
+  //   'setDateVarsList--dateInVar 확인: ',
+  //   date,
+  //   date ? dayjs(new Date(Number(date))).format('YYYY-MM-DD-HH:mm:ss') : 'No Date',
+  // );
 };
 
 export const getDateInVarsList = (workspace: string | undefined, chOrdmName: string): { date: string } => {
@@ -85,7 +85,7 @@ export const getDateInVarsList = (workspace: string | undefined, chOrdmName: str
   }
   const key = `${workspace}-${chOrdmName}`;
   if (!dateVarsList.has(key)) {
-    console.log('Error: dateVarsList.has(key)--No Value');
+    //console.log('Error: dateVarsList.has(key)--No Value');
     return { date: '0' };
   }
   const dateInVar = dateVarsList.get(key);
@@ -93,6 +93,6 @@ export const getDateInVarsList = (workspace: string | undefined, chOrdmName: str
     return { date: '0' };
   }
   const { date: aDate } = dateInVar()!;
-  console.log('getDateInVarsList() key: ', key, ' aDate: ', aDate);
+  //console.log('getDateInVarsList() key: ', key, ' aDate: ', aDate);
   return { date: aDate ? aDate : '0' };
 };

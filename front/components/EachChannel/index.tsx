@@ -30,7 +30,7 @@ const EachChannel: VFC<Props> = ({ channel }) => {
   const date = aDate.date || '0';
   // console.log('key: ', key, 'aDateInVar(): ', aDateInVar?.());
   // const aDate = useReactiveVar(aDateInVar);
-  console.log('EachChannel--channel, date: ', channel.name, date);
+  //console.log('EachChannel--channel, date: ', channel.name, date);
 
   //const date = localStorage.getItem(`${workspace}-${channel.name}`) || 0;
   const { data: count, mutate } = useSWR<number>(
@@ -47,7 +47,7 @@ const EachChannel: VFC<Props> = ({ channel }) => {
     // 이 EachChannel--/workspace/${workspace}/channel/${channel.name}--이 내가 현재 보고 있는 Channel Chat--location.pathname--이면
     // 이 EachChannel에 보이는 unread message counter 는 0으로 만든다
     if (location.pathname === `/workspace/${workspace}/channel/${channel.name}`) {
-      console.log(`/workspace/${workspace}/channel/${channel.name}`);
+      //console.log(`/workspace/${workspace}/channel/${channel.name}`);
       setShowCount(false);
     } else {
       setShowCount(true);

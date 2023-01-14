@@ -127,15 +127,15 @@ const Channel = () => {
   // 서버가 가장 최신 데이터를 이벤트로 보내주었으므로 캐시를 갱신하면 된다.
   const onMessage = useCallback(
     (data: IChat) => {
-      console.log(
-        'onMessage entered--chat이 message 이벤트로 들어 왔다. ',
-        '보낸자: ',
-        data.UserId,
-        '현재  EachChannel channel 이름: ',
-        channel,
-        '로그인 user: ',
-        userData?.id,
-      );
+      // console.log(
+      //   'onMessage entered--chat이 message 이벤트로 들어 왔다. ',
+      //   '보낸자: ',
+      //   data.UserId,
+      //   '현재  EachChannel channel 이름: ',
+      //   channel,
+      //   '로그인 user: ',
+      //   userData?.id,
+      // );
       // channel message를 전송한 channel 이 현재 보고 있는 channel이 아닐 경우
       // wake up EachChannel of channel message를 전송한 channel
       if (data.Channel.name !== channel) {
@@ -151,7 +151,7 @@ const Channel = () => {
         data.Channel.name === channel &&
         (data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') || data.UserId !== userData?.id)
       ) {
-        console.log('업로드 이미지이거나 혹은 내가 아닌 상대방이 전송한 채널 message 이벤트가 들어 왔다.');
+        //console.log('업로드 이미지이거나 혹은 내가 아닌 상대방이 전송한 채널 message 이벤트가 들어 왔다.');
         setDateInVar(workspace, channel);
         setDateVarsList(workspace, channel);
         mutateChat().then(() => {
@@ -181,7 +181,7 @@ const Channel = () => {
 
   const onMessageDM = useCallback(
     (data: IDM) => {
-      console.log('onMessageDM entered--chat이 dm 이벤트로 들어 왔다. ', '보낸자: ', data.SenderId);
+      //console.log('onMessageDM entered--chat이 dm 이벤트로 들어 왔다. ', '보낸자: ', data.SenderId);
       const { date } = getDateInVar(workspace, String(data.SenderId));
       setDateInVar(workspace, String(data.SenderId), date);
       setDateVarsList(workspace, String(data.SenderId), date);

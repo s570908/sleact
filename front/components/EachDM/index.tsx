@@ -47,7 +47,7 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
     // 이 EachDM--/workspace/${workspace}/dm/${member.id}--이 내가 현재 보고 있는 DM Chat--location.pathname--이면
     // 이 EachDM에 보이는 unread message counter 는 0으로 만든다
     if (location.pathname === `/workspace/${workspace}/dm/${member.id}`) {
-      console.log(`현재 페이지는 /workspace/${workspace}/dm/${member.id}`);
+      //console.log(`현재 페이지는 /workspace/${workspace}/dm/${member.id}`);
       setShowCount(false);
     } else {
       setShowCount(true);

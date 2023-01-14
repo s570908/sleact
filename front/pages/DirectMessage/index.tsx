@@ -178,13 +178,13 @@ const DirectMessage = () => {
 
   const onMessageChannel = useCallback(
     (data: IChat) => {
-      console.log(
-        'onMessage entered--chat이 message 이벤트로 들어 왔다. ',
-        '보낸 자: ',
-        data.UserId,
-        ' 보낸 채널: ',
-        data.Channel.name,
-      );
+      // console.log(
+      //   'onMessage entered--chat이 message 이벤트로 들어 왔다. ',
+      //   '보낸 자: ',
+      //   data.UserId,
+      //   ' 보낸 채널: ',
+      //   data.Channel.name,
+      // );
       const { date } = getDateInVarsList(workspace, String(data.Channel.name));
       //setDateInVar(workspace, String(data.Channel.name), date);
       setDateVarsList(workspace, String(data.Channel.name), date);
