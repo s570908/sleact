@@ -4,7 +4,7 @@ import React, { useEffect, useState, VFC } from 'react';
 import { useParams } from 'react-router';
 import { NavLink, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
-import { dateInVar } from '@utils/apollo';
+import { dateVarsList, setDateVarsList } from '@utils/apollo';
 import { useReactiveVar } from '@apollo/client';
 //import dayjs from 'dayjs';
 
@@ -18,9 +18,19 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
   const { data: userData } = useSWR<IUser>('/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
-  const dates = useReactiveVar(dateInVar);
+  //const dates = useReactiveVar(dateInVar);
   const key = `${workspace}-${member.id}`;
-  const date = dates?.[key] || '0';
+  //const date = dates?.[key] || '0';
+  //console.log('EachDM--dm, date: ', member.id, date);
+  if (!dateVarsList.has(key)) {
+    console.log('Error: dateVarsList.has--key: ', key, ' no value');
+    setDateVarsList(workspace!, String(member.id), '0');
+  }
+  const aDateInVar = dateVarsList.get(key)!;
+  const aDate = useReactiveVar(aDateInVar);
+  const date = aDate.date || '0';
+  //console.log('EachDM--dm, aDate: ', member.id, date);
+
   //const date = localStorage.getItem(`${workspace}-${member.id}`) || 0;
   //console.log('EachDM--member.id, date: ', member.id, date, dayjs(new Date(+date)).format('YYYY-MM-DD-HH:mm:ss'));
   const { data: count, mutate } = useSWR<number>(
@@ -31,13 +41,13 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
 
   useEffect(() => {
     mutate();
-  }, [mutate, dates]);
+  }, [mutate, aDate]);
 
   useEffect(() => {
     // 이 EachDM--/workspace/${workspace}/dm/${member.id}--이 내가 현재 보고 있는 DM Chat--location.pathname--이면
     // 이 EachDM에 보이는 unread message counter 는 0으로 만든다
     if (location.pathname === `/workspace/${workspace}/dm/${member.id}`) {
-      console.log(`현재 패이지는 /workspace/${workspace}/dm/${member.id}`);
+      console.log(`현재 페이지는 /workspace/${workspace}/dm/${member.id}`);
       setShowCount(false);
     } else {
       setShowCount(true);

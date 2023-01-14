@@ -16,7 +16,7 @@ import { Redirect } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
-import { setDateInVar, getDateInVar } from '@utils/apollo';
+import { setDateInVar, getDateInVar, setDateVarsList, getDateInVarsList } from '@utils/apollo';
 
 const PAGE_SIZE = 20;
 const Channel = () => {
@@ -114,7 +114,8 @@ const Channel = () => {
           .then(() => {
             // 서버에 요청하여 chat list를 전달받는다.
             mutateChat();
-            setDateInVar(workspace, channel); // chat 입력 시점을 저장
+            //setDateInVar(workspace, channel); // chat 입력 시점을 저장
+            setDateVarsList(workspace, channel); // chat 입력 시점을 저장
             //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           })
           .catch(console.error);
@@ -140,6 +141,8 @@ const Channel = () => {
       if (data.Channel.name !== channel) {
         const { date } = getDateInVar(workspace, data.Channel.name);
         setDateInVar(workspace, data.Channel.name, date);
+        const { date: aDate } = getDateInVarsList(workspace, data.Channel.name);
+        setDateVarsList(workspace, data.Channel.name, aDate);
       }
       // channel message를 전송한 channel 이 현재 보고 있는 channel 이고
       // 이미지 업로드에 의한 이벤트이거나 혹은
@@ -150,6 +153,7 @@ const Channel = () => {
       ) {
         console.log('업로드 이미지이거나 혹은 내가 아닌 상대방이 전송한 채널 message 이벤트가 들어 왔다.');
         setDateInVar(workspace, channel);
+        setDateVarsList(workspace, channel);
         mutateChat().then(() => {
           if (scrollbarRef.current) {
             if (
@@ -180,6 +184,7 @@ const Channel = () => {
       console.log('onMessageDM entered--chat이 dm 이벤트로 들어 왔다. ', '보낸자: ', data.SenderId);
       const { date } = getDateInVar(workspace, String(data.SenderId));
       setDateInVar(workspace, String(data.SenderId), date);
+      setDateVarsList(workspace, String(data.SenderId), date);
     },
     [workspace],
   );
@@ -200,6 +205,7 @@ const Channel = () => {
 
   useEffect(() => {
     setDateInVar(workspace, channel); // channel 페이지의 로딩 시점을 저장
+    setDateVarsList(workspace, channel);
     // localStorage.setItem(key, time); // channel 페이지의 로딩 시점을 저장
   }, [workspace, channel]);
 
@@ -235,6 +241,7 @@ const Channel = () => {
       axios.post(`/api/workspaces/${workspace}/channels/${channel}/images`, formData).then(() => {
         setDragOver(false);
         setDateInVar(workspace, channel); // image 업로드 시점을 저장
+        setDateVarsList(workspace, channel);
         //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // image 업로드 시점을 저장
         //mutateChat(); // 이렇게 코멘트 처리하여야 한다. channel message 이벤트가 들어 올 때, 즉 onMeaasge()에서 서버에서 chat을 가져오고
         //캐시를 업데이트한다. 즉, mutateChat().then(...)으로 처리한다.
