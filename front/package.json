@@ -11,6 +11,7 @@
   "author": "ZeroCho",
   "license": "MIT",
   "dependencies": {
+    "@apollo/client": "^3.7.4",
     "@emotion/babel-plugin": "^11.1.2",
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
