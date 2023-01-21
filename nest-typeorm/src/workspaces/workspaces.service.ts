@@ -25,31 +25,31 @@ export class WorkspacesService {
   }
 
   async findMyWorkspaces(myId: number) {
-    // Method 1:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
-    const myWorkSpaces = this.workspacesRepository
-      .createQueryBuilder('workSpaces')
-      .innerJoin('workSpaces.WorkspaceMembers', 'workSpaceMembers')
-      .where('workSpaceMembers.UserId = :id', { id: myId })
-      .getMany();
-    console.log('findMyWorkspaces(myId: number): ', await myWorkSpaces);
-    return myWorkSpaces;
+    // // Method 1:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
+    // const myWorkSpaces = this.workspacesRepository
+    //   .createQueryBuilder('workSpaces')
+    //   .innerJoin('workSpaces.WorkspaceMembers', 'workSpaceMembers')
+    //   .where('workSpaceMembers.UserId = :id', { id: myId })
+    //   .getMany();
+    // console.log('findMyWorkspaces(myId: number): ', await myWorkSpaces);
+    // return myWorkSpaces;
 
-    // //Method2:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
-    // return this.workspacesRepository.find({
-    //   join: {
-    //     alias: 'workspaces',
-    //     innerJoin: { WorkspaceMembers: 'workspaces.WorkspaceMembers' },
-    //   },
-    //   where: (qb: any) => {
-    //     qb.where(
-    //       // Filter related fields.
-    //       'WorkspaceMembers.UserId = :id',
-    //       { id: myId },
-    //     ).andWhere({
-    //       // Fileter workspaces fileds if any
-    //     });
-    //   },
-    // });
+    //Method2:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
+    return this.workspacesRepository.find({
+      join: {
+        alias: 'workspaces',
+        innerJoin: { WorkspaceMembers: 'workspaces.WorkspaceMembers' },
+      },
+      where: (qb: any) => {
+        qb.where(
+          // Filter related fields.
+          'WorkspaceMembers.UserId = :id',
+          { id: myId },
+        ).andWhere({
+          // Fileter workspaces fileds if any
+        });
+      },
+    });
 
     // This doesn't work because
     // At the time of writing, there is no way to create a where clause on a joined table using repo.find(...).
