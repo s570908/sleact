@@ -35,6 +35,8 @@ export class WorkspaceMembers {
   @JoinColumn([{ name: 'WorkspaceId', referencedColumnName: 'id' }])
   Workspace: Workspaces;
 
+  // User 가 지워지면 WorkspaceMembers를 지워라.
+  // User 가 갱신되면 WorkspaceMembers를 갱신하라.
   @ManyToOne(() => Users, (users) => users.WorkspaceMembers, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

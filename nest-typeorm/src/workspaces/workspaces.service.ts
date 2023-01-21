@@ -25,11 +25,44 @@ export class WorkspacesService {
   }
 
   async findMyWorkspaces(myId: number) {
-    return this.workspacesRepository.find({
-      where: {
-        WorkspaceMembers: [{ userId: myId }],
-      },
-    });
+    // Method 1:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
+    const myWorkSpaces = this.workspacesRepository
+      .createQueryBuilder('workSpaces')
+      .innerJoin('workSpaces.WorkspaceMembers', 'workSpaceMembers')
+      .where('workSpaceMembers.UserId = :id', { id: myId })
+      .getMany();
+    console.log('findMyWorkspaces(myId: number): ', await myWorkSpaces);
+    return myWorkSpaces;
+
+    // //Method2:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
+    // return this.workspacesRepository.find({
+    //   join: {
+    //     alias: 'workspaces',
+    //     innerJoin: { WorkspaceMembers: 'workspaces.WorkspaceMembers' },
+    //   },
+    //   where: (qb: any) => {
+    //     qb.where(
+    //       // Filter related fields.
+    //       'WorkspaceMembers.UserId = :id',
+    //       { id: myId },
+    //     ).andWhere({
+    //       // Fileter workspaces fileds if any
+    //     });
+    //   },
+    // });
+
+    // This doesn't work because
+    // At the time of writing, there is no way to create a where clause on a joined table using repo.find(...).
+    // You can join (doc) but the where clause only affects the entity of the repository.
+    // TypeORM also silently ignores invalid where clauses, so be careful about those.
+    // https://stackoverflow.com/questions/52246722/how-to-query-a-many-to-many-relation-with-typeorm
+    // return this.workspacesRepository.find({
+    //   relations: ['WorkspaceMembers'],
+    //   where: {
+    //     WorkspaceMembers: { userId: myId },  // 이것은 동작하지 않습니다. 왜냐하면 where절은 오직 workspacesRepository의 entity에서만
+    //                                          // 동작하기 때문입니다.
+    //   },
+    // });
   }
 
   async createWorkspace(name: string, url: string, myId: number) {

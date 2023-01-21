@@ -52,6 +52,8 @@ export class Workspaces {
   @OneToMany(() => Mentions, (mentions) => mentions.Workspace)
   Mentions: Mentions[];
 
+  // Workspaces.WorkspaceMembers가 존재할 경우
+  // Workspaces를 save 하게 되면, WorkspaceMembers도 자기의 테이블에 저장된다.
   @OneToMany(
     () => WorkspaceMembers,
     (workspacemembers) => workspacemembers.Workspace,
