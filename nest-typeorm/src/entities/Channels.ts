@@ -49,8 +49,8 @@ export class Channels {
   })
   ChannelMembers: ChannelMembers[];
 
-  @ManyToMany(() => Users, (users) => users.Channels)
-  Members: Users[];
+  // @ManyToMany(() => Users, (users) => users.Channels)
+  // Members: Users[];
 
   @ManyToOne(() => Workspaces, (workspaces) => workspaces.Channels, {
     onDelete: 'SET NULL',

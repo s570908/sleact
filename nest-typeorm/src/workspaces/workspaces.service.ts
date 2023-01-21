@@ -35,6 +35,7 @@ export class WorkspacesService {
     // return myWorkSpaces;
 
     //Method2:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
+    console.log('======>Method2');
     return this.workspacesRepository.find({
       join: {
         alias: 'workspaces',

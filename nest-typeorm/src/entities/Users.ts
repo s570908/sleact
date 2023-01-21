@@ -69,31 +69,31 @@ export class Users {
   @OneToMany(() => Workspaces, (workspaces) => workspaces.Owner)
   OwnedWorkspaces: Workspaces[];
 
-  @ManyToMany(() => Workspaces, (workspaces) => workspaces.Members)
-  @JoinTable({
-    name: 'workspacemembers',
-    joinColumn: {
-      name: 'UserId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'WorkspaceId',
-      referencedColumnName: 'id',
-    },
-  })
-  Workspaces: Workspaces[];
+  // @ManyToMany(() => Workspaces, (workspaces) => workspaces.Members)
+  // @JoinTable({
+  //   name: 'workspacemembers',
+  //   joinColumn: {
+  //     name: 'UserId',
+  //     referencedColumnName: 'id',
+  //   },
+  //   inverseJoinColumn: {
+  //     name: 'WorkspaceId',
+  //     referencedColumnName: 'id',
+  //   },
+  // })
+  // Workspaces: Workspaces[];
 
-  @ManyToMany(() => Channels, (channels) => channels.Members)
-  @JoinTable({
-    name: 'channelmembers',
-    joinColumn: {
-      name: 'UserId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'ChannelId',
-      referencedColumnName: 'id',
-    },
-  })
-  Channels: Channels[];
+  // @ManyToMany(() => Channels, (channels) => channels.Members)
+  // @JoinTable({
+  //   name: 'channelmembers',
+  //   joinColumn: {
+  //     name: 'UserId',
+  //     referencedColumnName: 'id',
+  //   },
+  //   inverseJoinColumn: {
+  //     name: 'ChannelId',
+  //     referencedColumnName: 'id',
+  //   },
+  // })
+  // Channels: Channels[];
 }

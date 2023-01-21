@@ -61,13 +61,13 @@ export class Workspaces {
   )
   WorkspaceMembers: WorkspaceMembers[];
 
-  @ManyToOne(() => Users, (users) => users.Workspaces, {
+  @ManyToOne(() => Users, (users) => users.OwnedWorkspaces, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'OwnerId', referencedColumnName: 'id' }])
   Owner: Users;
 
-  @ManyToMany(() => Users, (users) => users.Workspaces)
-  Members: Users[];
+  // @ManyToMany(() => Users, (users) => users.Workspaces)
+  // Members: Users[];
 }
