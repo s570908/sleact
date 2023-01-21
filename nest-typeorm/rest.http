@@ -1,4 +1,65 @@
 ### 
+@workspace=slack
+@id=12
+@perPage=20
+@page=1
+GET  http://localhost:3095/api/workspaces/{{workspace}}/dms/{{id}}/chats?perPage={{perPage}}&page={{page}}
+Content-Type: application/json
+
+### 
+@workspace=slack
+@channel=Sleact Frontend
+GET  http://localhost:3095/api/workspaces/{{workspace}}/channels/{{channel}}/members
+Content-Type: application/json
+
+### 
+@workspace=slack
+GET http://localhost:3095/api/workspaces/{{workspace}}/members
+Content-Type: application/json
+
+### 
+@workspace=slack
+@channel=Sleact Frontend
+@timestamp=0
+GET  http://localhost:3095/api/workspaces/{{workspace}}/channels/{{channel}}/unread?after={{timestamp}}
+Content-Type: application/json
+
+### 
+@workspace=slack
+@channel=Sleact Frontend
+@perPage=20
+@page=1
+GET  http://localhost:3095/api/workspaces/{{workspace}}/channels/{{channel}}/chats?perPage={{perPage}}&page={{page}}
+Content-Type: application/json
+
+### 
+@channel = Sleact Frontend
+GET http://localhost:3095/api/workspaces/slack/channels/{{channel}}
+Content-Type: application/json
+
+### 
+@workspace=slack
+POST http://localhost:3095/api/workspaces/{{workspace}}/channels
+Content-Type: application/json
+
+{ 
+  "name": "Channel Rest Test"    
+}
+
+### 
+GET http://localhost:3095/api/workspaces/slack/channels
+Content-Type: application/json
+
+### 
+POST http://localhost:3095/api/workspaces
+Content-Type: application/json
+
+{ 
+  "workspace": "Rest Test",  
+  "url":  "Rest Test"        
+}
+
+### 
 GET  http://localhost:3095/api/workspaces/slack/dms/12/chats?perPage=20&page=1
 Content-Type: application/json
 
