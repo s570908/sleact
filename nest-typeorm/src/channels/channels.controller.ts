@@ -67,6 +67,7 @@ export class ChannelsController {
     @Param('url') url: string,
     @Param('name') name: string,
   ) {
+    console.log('getWorkspaceChannelMembers url: ', url, ' name: ', name);
     return this.channelsService.getWorkspaceChannelMembers(url, name);
   }
 

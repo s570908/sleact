@@ -71,15 +71,54 @@ export class ChannelsService {
   }
 
   async getWorkspaceChannelMembers(url: string, name: string) {
-    return this.usersRepository
-      .createQueryBuilder('user')
-      .innerJoin('user.Channels', 'channels', 'channels.name = :name', {
-        name,
-      })
-      .innerJoin('channels.Workspace', 'workspace', 'workspace.url = :url', {
-        url,
-      })
-      .getMany();
+    const { id: WorkspaceId } = await this.workspacesRepository.findOne({
+      where: { url },
+      select: ['id'],
+    });
+    console.log('getWorkspaceChannelMembers: workspaceId', WorkspaceId);
+
+    const { id: ChannelId } = await this.channelsRepository.findOne({
+      where: { name, WorkspaceId },
+      select: ['id'],
+    });
+    console.log('getWorkspaceChannelMembers: ChannelId ', ChannelId);
+    console.log(
+      'getWorkspaceChannelMembers: members ',
+      await this.usersRepository
+        .createQueryBuilder('user')
+        .innerJoin(
+          'user.WorkspaceMembers',
+          'workspaceMembers',
+          'workspaceMembers.WorkspaceId = :WorkspaceId',
+          {
+            WorkspaceId,
+          },
+        )
+        .getMany(),
+    );
+
+    return (
+      this.usersRepository
+        .createQueryBuilder('user')
+        .innerJoin(
+          'user.WorkspaceMembers',
+          'workspaceMembers',
+          'workspaceMembers.WorkspaceId = :WorkspaceId',
+          {
+            WorkspaceId,
+          },
+        )
+        //.getMany();
+        .innerJoin(
+          'user.ChannelMembers',
+          'channelMembers',
+          'channelMembers.ChannelId = :ChannelId',
+          {
+            ChannelId,
+          },
+        )
+        .getMany()
+    );
   }
 
   async createWorkspaceChannelMembers(url, name, email) {

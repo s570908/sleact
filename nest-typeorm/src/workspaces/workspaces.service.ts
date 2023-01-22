@@ -47,7 +47,7 @@ export class WorkspacesService {
           'WorkspaceMembers.UserId = :id',
           { id: myId },
         ).andWhere({
-          // Fileter workspaces fileds if any
+          // Filter workspaces fileds if any
         });
       },
     });
