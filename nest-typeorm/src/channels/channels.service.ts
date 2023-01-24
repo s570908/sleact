@@ -71,57 +71,6 @@ export class ChannelsService {
   }
 
   async getWorkspaceChannelMembers(url: string, name: string) {
-    const { id: WorkspaceId } = await this.workspacesRepository.findOne({
-      where: { url },
-      select: ['id'],
-    });
-    console.log('getWorkspaceChannelMembers: workspaceId', WorkspaceId);
-
-    const { id: ChannelId } = await this.channelsRepository.findOne({
-      where: { name, WorkspaceId },
-      select: ['id'],
-    });
-    console.log('getWorkspaceChannelMembers: ChannelId ', ChannelId);
-    console.log(
-      'getWorkspaceChannelMembers: members ',
-      await this.usersRepository
-        .createQueryBuilder('user')
-        .innerJoin(
-          'user.WorkspaceMembers',
-          'workspaceMembers',
-          'workspaceMembers.WorkspaceId = :WorkspaceId',
-          {
-            WorkspaceId,
-          },
-        )
-        .getMany(),
-    );
-
-    return (
-      this.usersRepository
-        .createQueryBuilder('user')
-        .innerJoin(
-          'user.WorkspaceMembers',
-          'workspaceMembers',
-          'workspaceMembers.WorkspaceId = :WorkspaceId',
-          {
-            WorkspaceId,
-          },
-        )
-        //.getMany();
-        .innerJoin(
-          'user.ChannelMembers',
-          'channelMembers',
-          'channelMembers.ChannelId = :ChannelId',
-          {
-            ChannelId,
-          },
-        )
-        .getMany()
-    );
-  }
-
-  async createWorkspaceChannelMembers(url, name, email) {
     const channel = await this.channelsRepository
       .createQueryBuilder('channel')
       .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
@@ -132,6 +81,58 @@ export class ChannelsService {
     if (!channel) {
       return null; // TODO: 이 때 어떻게 에러 발생?
     }
+
+    console.log('getWorkspaceChannelMembers: channel ', channel);
+
+    const users = await this.usersRepository
+      .createQueryBuilder('user')
+      .innerJoin(
+        'user.ChannelMembers',
+        'channelMembers',
+        'channelMembers.ChannelId = :channelId',
+        {
+          channelId: channel.id,
+        },
+      )
+      .getMany();
+
+    console.log('getWorkspaceChannelMembers: users ', users);
+
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .innerJoin(
+        'user.ChannelMembers',
+        'channelMembers',
+        'channelMembers.ChannelId = :channelId',
+        {
+          channelId: channel.id,
+        },
+      )
+      .getMany();
+  }
+
+  async createWorkspaceChannelMembers(url, name, email) {
+    console.log(
+      'createWorkspaceChannelMembers(url, name, email) ',
+      url,
+      name,
+      email,
+    );
+    // url workspace에 있는 name channel을 찾는다.
+    // url workspace에 있는 email user를 찾는다.
+    // 이 name channel에 email user를 기록한다. 즉, email user를 channelMember에 기록한다.
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+    if (!channel) {
+      return null; // TODO: 이 때 어떻게 에러 발생?
+    }
+    console.log('createWorkspaceChannelMembers: channel ', channel);
+
     const user = await this.usersRepository
       .createQueryBuilder('user')
       .where('user.email = :email', { email })
@@ -139,9 +140,19 @@ export class ChannelsService {
         url,
       })
       .getOne();
+
+    // const user = await this.usersRepository
+    //   .createQueryBuilder('user')
+    //   .where('user.email = :email', { email })
+    //   .innerJoin('user.OwnedWorkspaces', 'workspace', 'workspace.url = :url', {
+    //     url,
+    //   })
+    //   .getOne();
+    console.log('createWorkspaceChannelMembers: user ', user);
     if (!user) {
       return null;
     }
+
     const channelMember = new ChannelMembers();
     channelMember.ChannelId = channel.id;
     channelMember.UserId = user.id;
