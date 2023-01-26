@@ -22,7 +22,7 @@ const EachChannel: VFC<Props> = ({ channel }) => {
   //console.log('EachChannel--channel, date: ', channel.name, date);
 
   if (!dateVarsList.has(key)) {
-    console.log('Error: dateVarsList.has--key: ', key, ' no value');
+    console.log('DateVarsList inititialized because EachChannel-dateVarsList.has--key: ', key, ' no value');
     setDateVarsList(workspace!, channel.name, '0');
   }
   const aDateInVar = dateVarsList.get(key)!;

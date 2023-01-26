@@ -6,6 +6,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoggedInGuard } from '../auth/logged-in.guard';
@@ -43,6 +44,12 @@ export class WorkspacesController {
     return this.workspacesService.getWorkspaceMembers(url);
   }
 
+  @ApiOperation({ summary: '워크스페이스 채널리스트 가져오기' })
+  @Get(':url/channels')
+  async getWorkspaceChannels(@Param('url') url: string) {
+    return this.workspacesService.getWorkspaceChannels(url);
+  }
+
   @ApiOperation({ summary: '워크스페이스 멤버 초대하기' })
   @Post(':url/members')
   async createWorkspaceMembers(
@@ -68,5 +75,14 @@ export class WorkspacesController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.workspacesService.getWorkspaceMember(url, id);
+  }
+
+  @ApiOperation({ summary: '워크스페이스 특정멤버 제거하기' })
+  @Delete(':url/members/:id')
+  async deleteWorkspaceMember(
+    @Param('url') url: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.workspacesService.deleteWorkspaceMember(url, id);
   }
 }

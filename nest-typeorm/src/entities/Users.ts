@@ -81,7 +81,7 @@ export class Users {
   //     referencedColumnName: 'id',
   //   },
   // })
-  // Workspaces: Workspaces[];
+  Workspaces: Workspaces[];
 
   // @ManyToMany(() => Channels, (channels) => channels.Members)
   // @JoinTable({
@@ -95,5 +95,6 @@ export class Users {
   //     referencedColumnName: 'id',
   //   },
   // })
-  // Channels: Channels[];
+  Channels: Channels[];
 }
+//

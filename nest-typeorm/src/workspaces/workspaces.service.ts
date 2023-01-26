@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChannelMembers } from '../entities/ChannelMembers';
@@ -96,7 +96,17 @@ export class WorkspacesService {
       .getMany();
   }
 
-  async createWorkspaceMembers(url, email) {
+  async getWorkspaceChannels(url: string) {
+    return this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .getMany();
+  }
+
+  async createWorkspaceMembers(url: string, email: any) {
+    console.log('createWorkspaceMembers: url, email ', url, email);
     const workspace = await this.workspacesRepository.findOne({
       where: { url },
       join: {
@@ -107,6 +117,7 @@ export class WorkspacesService {
       },
     });
     const user = await this.usersRepository.findOne({ where: { email } });
+    console.log('createWorkspaceMembers: workspace, user ', workspace, user);
     if (!user) {
       return null;
     }
@@ -123,12 +134,41 @@ export class WorkspacesService {
   }
 
   async getWorkspaceMember(url: string, id: number) {
+    console.log('getWorkspaceMember: url, id ', url, id);
     return this.usersRepository
       .createQueryBuilder('user')
       .where('user.id = :id', { id })
-      .innerJoin('user.Workspaces', 'workspaces', 'workspaces.url = :url', {
+      .innerJoin('user.WorkspaceMembers', 'members')
+      .innerJoin('members.Workspace', 'workspace', 'workspace.url = :url', {
         url,
       })
       .getOne();
+  }
+
+  async deleteWorkspaceMember(url: string, id: number) {
+    console.log('deleteWorkspaceMember: url, id ', url, id);
+    const workspaceMember = await this.workspaceMembersRepository
+      .createQueryBuilder('workspaceMember')
+      .innerJoin('workspaceMember.User', 'user', 'user.id = :id', {
+        id,
+      })
+      .innerJoin(
+        'workspaceMember.Workspace',
+        'workspace',
+        'workspace.url = :url',
+        {
+          url,
+        },
+      )
+      .getOne();
+    const result = await this.workspaceMembersRepository.delete({
+      UserId: workspaceMember.UserId,
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `could not find a workspaceMember(url, id): (${url}, ${id})`,
+      );
+    }
+    return 'ok';
   }
 }

@@ -136,9 +136,14 @@ export class ChannelsService {
     const user = await this.usersRepository
       .createQueryBuilder('user')
       .where('user.email = :email', { email })
-      .innerJoin('user.Workspaces', 'workspace', 'workspace.url = :url', {
-        url,
-      })
+      .innerJoin(
+        'user.WorkspaceMembers',
+        'workspaceMembers',
+        'workspaceMembers.WorkspaceId = :workspaceId',
+        {
+          workspaceId: channel.WorkspaceId,
+        },
+      )
       .getOne();
 
     // const user = await this.usersRepository
@@ -156,7 +161,7 @@ export class ChannelsService {
     const channelMember = new ChannelMembers();
     channelMember.ChannelId = channel.id;
     channelMember.UserId = user.id;
-    await this.channelMembersRepository.save(channelMember);
+    return await this.channelMembersRepository.save(channelMember);
   }
 
   async getWorkspaceChannelChats(
@@ -242,6 +247,7 @@ export class ChannelsService {
   }
 
   async getChannelUnreadsCount(url, name, after) {
+    console.log('getChannelUnreadsCount(url, name, after) ', url, name, after);
     const channel = await this.channelsRepository
       .createQueryBuilder('channel')
       .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {

@@ -85,7 +85,7 @@ export const getDateInVarsList = (workspace: string | undefined, chOrdmName: str
   }
   const key = `${workspace}-${chOrdmName}`;
   if (!dateVarsList.has(key)) {
-    //console.log('Error: dateVarsList.has(key)--No Value');
+    //console.log('DateVarsList inititialized because getDateInVarsList-dateVarsList.has(key)--No Value');
     return { date: '0' };
   }
   const dateInVar = dateVarsList.get(key);

@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   ParseIntPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -78,7 +79,17 @@ export class ChannelsController {
     @Param('name') name: string,
     @Body('email') email,
   ) {
-    return this.channelsService.createWorkspaceChannelMembers(url, name, email);
+    const result = await this.channelsService.createWorkspaceChannelMembers(
+      url,
+      name,
+      email,
+    );
+    console.log('createWorkspaceMembers: result ', result);
+    if (result) {
+      return 'ok';
+    } else {
+      throw new ForbiddenException();
+    }
   }
 
   @ApiOperation({ summary: '워크스페이스 특정 채널 채팅 모두 가져오기' })
@@ -151,6 +162,7 @@ export class ChannelsController {
     @Param('name') name,
     @Query('after', ParseIntPipe) after: number,
   ) {
+    console.log('async getUnreads(url, name, after) ', url, name, after);
     return this.channelsService.getChannelUnreadsCount(url, name, after);
   }
 }

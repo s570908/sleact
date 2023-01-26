@@ -23,7 +23,7 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
   //const date = dates?.[key] || '0';
   //console.log('EachDM--dm, date: ', member.id, date);
   if (!dateVarsList.has(key)) {
-    console.log('Error: dateVarsList.has--key: ', key, ' no value');
+    console.log('DateVarsList inititialized because EachDM-dateVarsList.has--key: ', key, ' no value');
     setDateVarsList(workspace!, String(member.id), '0');
   }
   const aDateInVar = dateVarsList.get(key)!;
