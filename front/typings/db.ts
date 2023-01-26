@@ -2,7 +2,7 @@ export interface IUser {
   id: number;
   nickname: string;
   email: string;
-  OwnedWorkspaces: IWorkspace[];
+  Workspaces: IWorkspace[];
 }
 
 export interface IUserWithOnline extends IUser {
