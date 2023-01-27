@@ -26,13 +26,13 @@ export class WorkspacesService {
 
   async findMyWorkspaces(myId: number) {
     // // Method 1:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
-    // const myWorkSpaces = this.workspacesRepository
-    //   .createQueryBuilder('workSpaces')
-    //   .innerJoin('workSpaces.WorkspaceMembers', 'workSpaceMembers')
-    //   .where('workSpaceMembers.UserId = :id', { id: myId })
+    // const myWorkspaces = this.workspacesRepository
+    //   .createQueryBuilder('Workspaces')
+    //   .innerJoin('Workspaces.WorkspaceMembers', 'workspaceMembers')
+    //   .where('workspaceMembers.UserId = :id', { id: myId })
     //   .getMany();
-    // console.log('findMyWorkspaces(myId: number): ', await myWorkSpaces);
-    // return myWorkSpaces;
+    // console.log('findMyWorkspaces(myId: number): ', await myWorkppaces);
+    // return myWorkspaces;
 
     //Method2:  https://newbedev.com/typeorm-query-entity-based-on-relation-property
     console.log('======>Method2');
@@ -47,7 +47,7 @@ export class WorkspacesService {
           'WorkspaceMembers.UserId = :id',
           { id: myId },
         ).andWhere({
-          // Filter workspaces fileds if any
+          // Filter workspaces fields if any
         });
       },
     });

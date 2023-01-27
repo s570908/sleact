@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
+import { WorkspaceMembers } from 'src/entities/WorkspaceMembers';
 import { Workspaces } from 'src/entities/Workspaces';
 import { Repository } from 'typeorm';
 import { Users } from '../entities/Users';
@@ -23,36 +24,75 @@ export class LocalSerializer extends PassportSerializer {
   }
 
   async deserializeUser(userId: string, done: CallableFunction) {
-    const myWorkSpaces = await this.workspacesRepository
-      .createQueryBuilder('workSpaces')
-      .innerJoin('workSpaces.WorkspaceMembers', 'workSpaceMembers')
-      .where('workSpaceMembers.UserId = :id', { id: userId })
-      .getMany();
-    const user = await this.usersRepository.findOneOrFail(
-      {
-        id: +userId,
-      },
-      {
-        select: ['id', 'email', 'nickname'],
-      },
-    );
-    user.Workspaces = myWorkSpaces;
-    console.log('deserializeUser--userId user ', userId, user);
+    // Method 2
+
+    // For test purpose of Method 1, commented out because it works good.
+    // const aUser = await this.usersRepository
+    //   .createQueryBuilder('users')
+    //   .innerJoinAndSelect(
+    //     'users.WorkspaceMembers',
+    //     'workspaceMembers',
+    //     'workspaceMembers.UserId = :userId',
+    //     { userId },
+    //   )
+    //   .innerJoinAndSelect('workspaceMembers.Workspace', 'Workspace')
+    //   .getOne();
+    // //.getMany();
+    // console.log('deserializeUser--aUser ', aUser);
+
+    // if (aUser?.WorkspaceMembers) {
+    //   aUser.Workspaces = aUser.WorkspaceMembers.map((wm) => wm.Workspace);
+    //   delete aUser.WorkspaceMembers;
+    //   delete aUser.createdAt;
+    //   delete aUser.updatedAt;
+    //   delete aUser.deletedAt;
+    // }
+    // console.log('deserializeUser--aUser ', aUser);
 
     return await this.usersRepository
-      .findOneOrFail(
-        {
-          id: +userId,
-        },
-        {
-          select: ['id', 'email', 'nickname'],
-        },
+      .createQueryBuilder('users')
+      .innerJoinAndSelect(
+        'users.WorkspaceMembers',
+        'workspaceMembers',
+        'workspaceMembers.UserId = :userId',
+        { userId },
       )
+      .innerJoinAndSelect('workspaceMembers.Workspace', 'Workspace')
+      .getOne()
       .then((user) => {
-        user.Workspaces = myWorkSpaces;
+        if (user?.WorkspaceMembers) {
+          user.Workspaces = user.WorkspaceMembers.map((wm) => wm.Workspace);
+          delete user.WorkspaceMembers;
+          delete user.createdAt;
+          delete user.updatedAt;
+          delete user.deletedAt;
+        }
         console.log('deserializeUser--user: ', user);
         done(null, user);
       })
       .catch((error) => done(error));
+
+    // Method 1
+
+    //   const myWorkSpaces = await this.workspacesRepository
+    //     .createQueryBuilder('workspaces')
+    //     .innerJoin('workspaces.WorkspaceMembers', 'workspaceMembers')
+    //     .where('workspaceMembers.UserId = :id', { id: userId })
+    //     .getMany();
+    //   return await this.usersRepository
+    //     .findOneOrFail(
+    //       {
+    //         id: +userId,
+    //       },
+    //       {
+    //         select: ['id', 'email', 'nickname'],
+    //       },
+    //     )
+    //     .then((user) => {
+    //       user.Workspaces = myWorkSpaces;
+    //       console.log('deserializeUser--user: ', user);
+    //       done(null, user);
+    //     })
+    //     .catch((error) => done(error));
   }
 }

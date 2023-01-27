@@ -82,21 +82,21 @@ export class ChannelsService {
       return null; // TODO: 이 때 어떻게 에러 발생?
     }
 
-    console.log('getWorkspaceChannelMembers: channel ', channel);
+    // console.log('getWorkspaceChannelMembers: channel ', channel);
 
-    const users = await this.usersRepository
-      .createQueryBuilder('user')
-      .innerJoin(
-        'user.ChannelMembers',
-        'channelMembers',
-        'channelMembers.ChannelId = :channelId',
-        {
-          channelId: channel.id,
-        },
-      )
-      .getMany();
+    // const users = await this.usersRepository
+    //   .createQueryBuilder('user')
+    //   .innerJoin(
+    //     'user.ChannelMembers',
+    //     'channelMembers',
+    //     'channelMembers.ChannelId = :channelId',
+    //     {
+    //       channelId: channel.id,
+    //     },
+    //   )
+    //   .getMany();
 
-    console.log('getWorkspaceChannelMembers: users ', users);
+    // console.log('getWorkspaceChannelMembers: users ', users);
 
     return this.usersRepository
       .createQueryBuilder('user')
