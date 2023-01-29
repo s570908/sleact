@@ -30,6 +30,7 @@
     "cross-env": "^7.0.3",
     "dayjs": "^1.10.4",
     "gravatar": "^1.8.1",
+    "immer": "^9.0.19",
     "react": "^17.0.1",
     "react-custom-scrollbars-2": "^4.3.0",
     "react-dom": "^17.0.1",
