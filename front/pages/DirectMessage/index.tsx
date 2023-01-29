@@ -17,6 +17,7 @@ import { toast } from 'react-toastify';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
 import { setDateInVar, getDateInVar } from '@utils/apollo';
+import produce from 'immer';
 
 const PAGE_SIZE = 20;
 const DirectMessage = () => {
@@ -146,8 +147,11 @@ const DirectMessage = () => {
         console.log('내가 아닌 상대방이 전송한 chat이 이벤트로 들어 왔다.');
         setDateInVar(workspace, id);
         mutateChat((chatData) => {
-          chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(data)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
-          return chatData;
+          const newChaData = produce(chatData, (draft) => {
+            draft?.[0].unshift(data);
+          });
+          //chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(data)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
+          return newChaData;
         }, false).then(() => {
           // { revalidate: true },
           if (scrollbarRef.current) {
