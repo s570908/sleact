@@ -145,12 +145,10 @@ const DirectMessage = () => {
         // revalidate = true: should the cache revalidate once the asynchronous update resolves.
         console.log('내가 아닌 상대방이 전송한 chat이 이벤트로 들어 왔다.');
         setDateInVar(workspace, id);
-        mutateChat().then(() => {
-          // (chatData) => {
-          //   chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(data)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
-          //   return chatData;
-          // },
-          //false,
+        mutateChat((chatData) => {
+          chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(data)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
+          return chatData;
+        }, false).then(() => {
           // { revalidate: true },
           if (scrollbarRef.current) {
             // client의 bottom: scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop()
