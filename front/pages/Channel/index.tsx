@@ -16,7 +16,7 @@ import { Redirect } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
-import { setDateInVar, getDateInVar, setDateVarsList, getDateInVarsList } from '@utils/apollo';
+import { getDate, setDate } from '@hooks/useDate';
 
 const PAGE_SIZE = 20;
 const Channel = () => {
@@ -106,7 +106,7 @@ const Channel = () => {
             scrollbarRef.current.scrollToBottom();
           }
         });
-        // 서버에 입력된 chat 전송
+        // 입력된 chat을 서버에 전송
         axios
           .post(`/api/workspaces/${workspace}/channels/${channel}/chats`, {
             content: savedChat,
@@ -114,8 +114,9 @@ const Channel = () => {
           .then(() => {
             // 서버에 요청하여 chat list를 전달받는다.
             mutateChat();
-            //setDateInVar(workspace, channel); // chat 입력 시점을 저장
-            setDateVarsList(workspace, channel); // chat 입력 시점을 저장
+            // chat 입력 시점을 저장
+            setDate({ cacheKey: `${workspace}-${channel}`, cacheDate: new Date().getTime().toString() });
+
             //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           })
           .catch(console.error);
@@ -136,24 +137,26 @@ const Channel = () => {
       //   '로그인 user: ',
       //   userData?.id,
       // );
-      // channel message를 전송한 channel 이 현재 보고 있는 channel이 아닐 경우
-      // wake up EachChannel of channel message를 전송한 channel
+      // channel message를 전송한 channel 이 현재 보고 있는 channel이 아닐 경우 lastReadDate의 시간 변경없이
+      // wakeup( EachChannel(channel message를 전송한 channel) )
       if (data.Channel.name !== channel) {
-        const { date } = getDateInVar(workspace, data.Channel.name);
-        setDateInVar(workspace, data.Channel.name, date);
-        const { date: aDate } = getDateInVarsList(workspace, data.Channel.name);
-        setDateVarsList(workspace, data.Channel.name, aDate);
+        const key = `${workspace}-${data.Channel.name}`;
+        const oldDate = getDate(key); // 시간 변경없이 있는 시간 그대로 가져와서... wakeup( EachChannel(channel message를 전송한 channel) )
+        setDate({ cacheKey: key, cacheDate: oldDate });
       }
       // channel message를 전송한 channel 이 현재 보고 있는 channel 이고
       // 이미지 업로드에 의한 이벤트이거나 혹은
       // id는 상대방id.  내가 전송한 chat이 아니고 상대방이 전송한 chat일 경우
+      // lastReadDate를 현재 시간으로 세팅하고 wakeup(EachChannel(현재 보고 있는 channel))
       if (
         data.Channel.name === channel &&
         (data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') || data.UserId !== userData?.id)
       ) {
         //console.log('업로드 이미지이거나 혹은 내가 아닌 상대방이 전송한 채널 message 이벤트가 들어 왔다.');
-        setDateInVar(workspace, channel);
-        setDateVarsList(workspace, channel);
+        // lastReadTime을 현재 시간으로 세팅한다.
+        const key = `${workspace}-${data.Channel.name}`;
+        setDate({ cacheKey: key, cacheDate: new Date().getTime().toString() });
+
         mutateChat().then(() => {
           if (scrollbarRef.current) {
             if (
@@ -182,9 +185,11 @@ const Channel = () => {
   const onMessageDM = useCallback(
     (data: IDM) => {
       //console.log('onMessageDM entered--chat이 dm 이벤트로 들어 왔다. ', '보낸자: ', data.SenderId);
-      const { date } = getDateInVar(workspace, String(data.SenderId));
-      setDateInVar(workspace, String(data.SenderId), date);
-      setDateVarsList(workspace, String(data.SenderId), date);
+      // 현재  보고  있는 페이지가 channel인데 dm message 가 들어 왔으므로 lastReadDate는 그대로 두고
+      // wakeup( EachDM(메시지를 전송한 dm) )
+      const key = `${workspace}-${String(data.SenderId)}`;
+      const sDate = getDate(key); // 시간 변경없이 있는 시간 그대로를 읽어서 그것으로 wakeup(EachChannel(메시지를 보낸 channel))
+      setDate({ cacheKey: key, cacheDate: sDate });
     },
     [workspace],
   );
@@ -204,8 +209,8 @@ const Channel = () => {
   }, [socket, onMessageDM]);
 
   useEffect(() => {
-    setDateInVar(workspace, channel); // channel 페이지의 로딩 시점을 저장
-    setDateVarsList(workspace, channel);
+    // channel 페이지의 로딩 시점을 저장
+    setDate({ cacheKey: `${workspace}-${channel}`, cacheDate: new Date().getTime().toString() });
     // localStorage.setItem(key, time); // channel 페이지의 로딩 시점을 저장
   }, [workspace, channel]);
 
@@ -240,10 +245,12 @@ const Channel = () => {
       }
       axios.post(`/api/workspaces/${workspace}/channels/${channel}/images`, formData).then(() => {
         setDragOver(false);
-        setDateInVar(workspace, channel); // image 업로드 시점을 저장
-        setDateVarsList(workspace, channel);
+
+        // image 업로드 시점을 저장
+        setDate({ cacheKey: `${workspace}-${channel}`, cacheDate: new Date().getTime().toString() });
         //localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString()); // image 업로드 시점을 저장
-        //mutateChat(); // 이렇게 코멘트 처리하여야 한다. channel message 이벤트가 들어 올 때, 즉 onMeaasge()에서 서버에서 chat을 가져오고
+
+        //mutateChat(); // 이렇게 코멘트 처리하여야 한다. channel message 이벤트가 들어 올 때 처리한다. 즉 onMeaasge()에서 서버가 전송한 chat을 가져오고
         //캐시를 업데이트한다. 즉, mutateChat().then(...)으로 처리한다.
       });
     },

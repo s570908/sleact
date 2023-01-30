@@ -1,11 +1,10 @@
+import useDate from '@hooks/useDate';
 import { IChannel, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import React, { useEffect, useState, VFC } from 'react';
 import { useParams } from 'react-router';
 import { NavLink, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
-import { dateVarsList, setDateVarsList } from '@utils/apollo';
-import { useReactiveVar } from '@apollo/client';
 
 interface Props {
   channel: IChannel;
@@ -16,22 +15,9 @@ const EachChannel: VFC<Props> = ({ channel }) => {
   const { data: userData } = useSWR<IUser>('/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
-  //const dates = useReactiveVar(dateInVar);
   const key = `${workspace}-${channel.name}`;
-  //const date = dates?.[key] || '0';
-  //console.log('EachChannel--channel, date: ', channel.name, date);
-
-  if (!dateVarsList.has(key)) {
-    console.log('DateVarsList inititialized because EachChannel-dateVarsList.has--key: ', key, ' no value');
-    setDateVarsList(workspace!, channel.name, '0');
-  }
-  const aDateInVar = dateVarsList.get(key)!;
-  const aDate = useReactiveVar(aDateInVar);
-  const date = aDate.date || '0';
-  // console.log('key: ', key, 'aDateInVar(): ', aDateInVar?.());
-  // const aDate = useReactiveVar(aDateInVar);
-  //console.log('EachChannel--channel, date: ', channel.name, date);
-
+  const { date: lastReadDate } = useDate(key);
+  const date = lastReadDate?.date || '0';
   //const date = localStorage.getItem(`${workspace}-${channel.name}`) || 0;
   const { data: count, mutate } = useSWR<number>(
     userData ? `/api/workspaces/${workspace}/channels/${channel.name}/unreads?after=${date}` : null,
@@ -41,7 +27,7 @@ const EachChannel: VFC<Props> = ({ channel }) => {
 
   useEffect(() => {
     mutate();
-  }, [mutate, aDate]);
+  }, [mutate]);
 
   useEffect(() => {
     // 이 EachChannel--/workspace/${workspace}/channel/${channel.name}--이 내가 현재 보고 있는 Channel Chat--location.pathname--이면

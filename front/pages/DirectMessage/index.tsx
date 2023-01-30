@@ -14,10 +14,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
-import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
-import { setDateVarsList, getDateInVarsList } from '@utils/apollo';
 import produce from 'immer';
+import { getDate, setDate } from '@hooks/useDate';
+import useSWR from 'swr';
 
 const PAGE_SIZE = 20;
 const DirectMessage = () => {
@@ -47,6 +47,7 @@ const DirectMessage = () => {
       },
     },
   );
+  //const key = `${workspace}-${id}`;
   const [chat, onChangeChat, setChat] = useInput('');
   const scrollbarRef = useRef<Scrollbars>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -114,14 +115,14 @@ const DirectMessage = () => {
           .then(() => {
             // 서버에 요청하여 chat list를 전달받는다.
             mutateChat();
-            //setDateInVar(workspace, id); // chat 입력 시점을 저장
-            setDateVarsList(workspace, id);
+            // chat 입력 시점을 저장
+            setDate({ cacheKey: `${workspace}-${id}`, cacheDate: new Date().getTime().toString() });
             //localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // chat 입력 시점을 저장
           })
           .catch(console.error);
       }
     },
-    [chat, workspace, id, myData, userData, chatData, mutateChat, setChat],
+    [chat, chatData, mutateChat, workspace, id, myData, userData, setChat],
   );
 
   // 서버가 가장 최신 데이터를 이벤트로 보내주었으므로 캐시를 갱신하면 된다.
@@ -136,20 +137,23 @@ const DirectMessage = () => {
         '로그인 user: ',
         myData.id,
       );
-      // dm message를 전송한 dm 이 현재 보고 있는 dm이 아닐 경우
+      // dm message를 전송한 dm 이 현재 보고 있는 dm이 아닐 경우 lastReadDate의 시간 변경없이 wakeup(EachDm(dm))
       if (data.SenderId !== Number(id)) {
-        const { date } = getDateInVarsList(workspace, String(data.SenderId));
-        //setDateInVar(workspace, String(data.SenderId), date);
-        setDateVarsList(workspace, String(data.SenderId), date);
+        const key = `${workspace}-${String(data.SenderId)}`;
+        const oldDate = getDate(key); // 시간 변경없이 있는 시간 그대로 가져와서... wakeup(EachDM(메시지를 전송한 dm))
+        setDate({ cacheKey: key, cacheDate: oldDate });
       }
       // dm message를 전송한 dm 이 현재 보고 있는 dm 이고
       // id는 상대방id.  내가 전송한 chat이 아니고 상대방이 전송한 chat일 경우
+      // lastReadDate를 현재 시간으로 세팅하고 wakeup(EachDm(현재 보고 있는 dm))
       if (data.SenderId === Number(id) && myData.id !== Number(id)) {
         console.log('내가 아닌 상대방이 전송한 chat이 이벤트로 들어 왔다.');
-        //setDateInVar(workspace, id);
-        setDateVarsList(workspace, id);
+        // lastReadTime을 현재 시간으로 세팅한다.
+        setDate({ cacheKey: `${workspace}-${id}`, cacheDate: new Date().getTime().toString() });
+
         mutateChat((chatData) => {
           const newChaData = produce(chatData, (draft) => {
+            // 새로운 것을 만들어서 리턴한다.
             draft?.[0].unshift(data);
           });
           //chatData?.[0].unshift(data); // 가장 최신인 dm chat 1개(data)를 가장 최신 페이지(chatData?.[0])의 가장 맨 앞(unshift)에 넣는다.
@@ -192,9 +196,13 @@ const DirectMessage = () => {
       //   ' 보낸 채널: ',
       //   data.Channel.name,
       // );
-      const { date } = getDateInVarsList(workspace, String(data.Channel.name));
-      //setDateInVar(workspace, String(data.Channel.name), date);
-      setDateVarsList(workspace, String(data.Channel.name), date);
+
+      // 현재 DM 페이지를 보고 있는데 channel message가 들어 왔다.
+      // lastReadDate를 변경없이 그대로 두고
+      // wakeup( EachChannel( 메시지를 전송한 channel ) )
+      const key = `${workspace}-${String(data.Channel.name)}`;
+      const sDate = getDate(key); // 시간 변경없이 있는 시간 그대로를 읽어서 그것으로 wakeup(EachChannel(메시지를 보낸 channel))
+      setDate({ cacheKey: key, cacheDate: sDate });
     },
     [workspace],
   );
@@ -214,8 +222,8 @@ const DirectMessage = () => {
   }, [socket, onMessageChannel]);
 
   useEffect(() => {
-    //setDateInVar(workspace, id);
-    setDateVarsList(workspace, id);
+    // DM 페이지의 로딩 시점을 저장
+    setDate({ cacheKey: `${workspace}-${id}`, cacheDate: new Date().getTime().toString() });
     //localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // DM 페이지의 로딩 시점을 저장
   }, [workspace, id]);
 
@@ -245,8 +253,8 @@ const DirectMessage = () => {
       }
       axios.post(`/api/workspaces/${workspace}/dms/${id}/images`, formData).then(() => {
         setDragOver(false);
-        //setDateInVar(workspace, id);
-        setDateVarsList(workspace, id);
+        // image 업로드 시점을 저장
+        setDate({ cacheKey: `${workspace}-${id}`, cacheDate: new Date().getTime().toString() });
         //localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString()); // image 업로드 시점을 저장
         mutateChat();
       });

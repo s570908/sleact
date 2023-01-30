@@ -101,7 +101,7 @@ if (isDevelopment && config.plugins) {
     }),
   );
   // 개발모드에서는 bundle analyzer를 서버에 따로 띄운다
-  config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: true }));
+  config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: false }));
 }
 if (!isDevelopment && config.plugins) {
   // 현재의 plugin들은 별반 효과가 없으나 옛날 plugin들은 space 최적화가 잘 된다.

@@ -4,8 +4,7 @@ import React, { useEffect, useState, VFC } from 'react';
 import { useParams } from 'react-router';
 import { NavLink, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
-import { dateVarsList, setDateVarsList } from '@utils/apollo';
-import { useReactiveVar } from '@apollo/client';
+import useDate from '@hooks/useDate';
 //import dayjs from 'dayjs';
 
 interface Props {
@@ -18,21 +17,21 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
   const { data: userData } = useSWR<IUser>('/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
-  //const dates = useReactiveVar(dateInVar);
-  const key = `${workspace}-${member.id}`;
-  //const date = dates?.[key] || '0';
-  //console.log('EachDM--dm, date: ', member.id, date);
-  if (!dateVarsList.has(key)) {
-    console.log('DateVarsList inititialized because EachDM-dateVarsList.has--key: ', key, ' no value');
-    setDateVarsList(workspace!, String(member.id), '0');
-  }
-  const aDateInVar = dateVarsList.get(key)!;
-  const aDate = useReactiveVar(aDateInVar);
-  const date = aDate.date || '0';
-  //console.log('EachDM--dm, aDate: ', member.id, date);
 
-  //const date = localStorage.getItem(`${workspace}-${member.id}`) || 0;
-  //console.log('EachDM--member.id, date: ', member.id, date, dayjs(new Date(+date)).format('YYYY-MM-DD-HH:mm:ss'));
+  const key = `${workspace}-${member.id}`;
+  const { date: lastReadDate } = useDate(key);
+  const date = lastReadDate?.date || '0';
+  //console.log('EachDM--dm, lastReadDate, date: ', member.id, lastReadDate, date);
+  //console.log('EachDM--dm, date: ', member.id, date);
+  //const dateDebug = localStorage.getItem(`${workspace}-${member.id}`) || 0;
+  // console.log(
+  //   'EachDM--member.id, lastReadDate, date, dateDebug: ',
+  //   member.id,
+  //   lastReadDate,
+  //   date,
+  //   dayjs(new Date(+date)).format('YYYY-MM-DD-HH:mm:ss'),
+  //   dayjs(new Date(+dateDebug)).format('YYYY-MM-DD-HH:mm:ss'),
+  // );
   const { data: count, mutate } = useSWR<number>(
     userData ? `/api/workspaces/${workspace}/dms/${member.id}/unreads?after=${date}` : null,
     fetcher,
@@ -41,7 +40,7 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
 
   useEffect(() => {
     mutate();
-  }, [mutate, aDate]);
+  }, [mutate]);
 
   useEffect(() => {
     // 이 EachDM--/workspace/${workspace}/dm/${member.id}--이 내가 현재 보고 있는 DM Chat--location.pathname--이면
