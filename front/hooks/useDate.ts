@@ -31,7 +31,7 @@ const fetcherDate = async (key: string) => {
     return Promise.resolve(null);
   }
   const value = dateList.get(key);
-  console.log('fetcherDate--key, value ', key, value);
+  //console.log('fetcherDate--key, value ', key, value);
   if (!value) {
     return Promise.resolve(null);
   } else {
@@ -40,7 +40,7 @@ const fetcherDate = async (key: string) => {
 };
 
 export const setDate = ({ cacheKey, cacheDate: newDate }: IKeydate) => {
-  console.log('setDate--cacheKey, cacheDate ', cacheKey, newDate);
+  //console.log('setDate--cacheKey, cacheDate ', cacheKey, newDate);
   localStorage.setItem(cacheKey, newDate);
   dateList.set(cacheKey, { date: newDate });
   mutate(cacheKey, fetcherDate);
@@ -55,7 +55,7 @@ export default function (key: any) {
   const { data: date, mutate: mutateDate } = useSWR(key, fetcherDate, {
     revalidateOnFocus: false,
   });
-  console.log('useSWR(key, fetcherDate)--key date ', key, date);
+  //console.log('useSWR(key, fetcherDate)--key date ', key, date);
   return {
     date,
     mutateDate,

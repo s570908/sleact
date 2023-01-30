@@ -128,15 +128,15 @@ const DirectMessage = () => {
   // 서버가 가장 최신 데이터를 이벤트로 보내주었으므로 캐시를 갱신하면 된다.
   const onMessage = useCallback(
     (data: IDM) => {
-      console.log(
-        'onMessage entered--chat이 dm 이벤트로 들어 왔다. ',
-        '보낸자: ',
-        data.SenderId,
-        '현재  EachDM Chat User: ',
-        id,
-        '로그인 user: ',
-        myData.id,
-      );
+      // console.log(
+      //   'onMessage entered--chat이 dm 이벤트로 들어 왔다. ',
+      //   '보낸자: ',
+      //   data.SenderId,
+      //   '현재  EachDM Chat User: ',
+      //   id,
+      //   '로그인 user: ',
+      //   myData.id,
+      // );
       // dm message를 전송한 dm 이 현재 보고 있는 dm이 아닐 경우 lastReadDate의 시간 변경없이 wakeup(EachDm(dm))
       if (data.SenderId !== Number(id)) {
         const key = `${workspace}-${String(data.SenderId)}`;
@@ -147,7 +147,7 @@ const DirectMessage = () => {
       // id는 상대방id.  내가 전송한 chat이 아니고 상대방이 전송한 chat일 경우
       // lastReadDate를 현재 시간으로 세팅하고 wakeup(EachDm(현재 보고 있는 dm))
       if (data.SenderId === Number(id) && myData.id !== Number(id)) {
-        console.log('내가 아닌 상대방이 전송한 chat이 이벤트로 들어 왔다.');
+        //console.log('내가 아닌 상대방이 전송한 chat이 이벤트로 들어 왔다.');
         // lastReadTime을 현재 시간으로 세팅한다.
         setDate({ cacheKey: `${workspace}-${id}`, cacheDate: new Date().getTime().toString() });
 
@@ -167,7 +167,7 @@ const DirectMessage = () => {
               scrollbarRef.current.getScrollHeight() <
               scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
             ) {
-              console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+              //console.log('scrollToBottom!', scrollbarRef.current?.getValues());
               scrollbarRef.current?.scrollToBottom();
               // setTimeout(() => {
               //   scrollbarRef.current?.scrollToBottom();

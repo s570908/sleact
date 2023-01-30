@@ -34,7 +34,7 @@ const Channel = () => {
     fetcher,
     {
       onSuccess(data) {
-        console.log('Channel--chats: ', data);
+        //console.log('Channel--chats: ', data);
         if (data?.length === 1) {
           setTimeout(() => {
             scrollbarRef.current?.scrollToBottom();
@@ -101,7 +101,7 @@ const Channel = () => {
         }, false).then(() => {
           setChat('');
           if (scrollbarRef.current) {
-            console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+            //console.log('scrollToBottom!', scrollbarRef.current?.getValues());
             // 채팅을 입력하였을 때 스크롤을 제일 아래로 내린다.
             scrollbarRef.current.scrollToBottom();
           }
@@ -163,7 +163,7 @@ const Channel = () => {
               scrollbarRef.current.getScrollHeight() <
               scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
             ) {
-              console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+              //console.log('scrollToBottom!', scrollbarRef.current?.getValues());
               setTimeout(() => {
                 scrollbarRef.current?.scrollToBottom();
               }, 100);
@@ -239,7 +239,7 @@ const Channel = () => {
       } else {
         // Use DataTransfer interface to access the file(s)
         for (let i = 0; i < e.dataTransfer.files.length; i++) {
-          console.log(e, '... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
+          //console.log(e, '... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
           formData.append('image', e.dataTransfer.files[i]);
         }
       }
