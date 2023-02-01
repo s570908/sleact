@@ -7,110 +7,118 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model channelchats {
+model ChannelChats {
   id        Int       @id @default(autoincrement())
   content   String    @db.Text
   createdAt DateTime  @default(now()) @db.DateTime(6)
   updatedAt DateTime  @default(now()) @db.DateTime(6)
   UserId    Int?
   ChannelId Int?
-  channels  channels? @relation(fields: [ChannelId], references: [id], map: "FK_8494e7d49237c46d648fbab8cf4")
-  users     users?    @relation(fields: [UserId], references: [id], map: "FK_d94a7a11d2bc17e56ed7c9790c3")
+  Channels  Channels? @relation(fields: [ChannelId], references: [id], map: "FK_8494e7d49237c46d648fbab8cf4")
+  Users     Users?    @relation(fields: [UserId], references: [id], map: "FK_d94a7a11d2bc17e56ed7c9790c3")
 
   @@index([ChannelId], map: "ChannelId")
   @@index([UserId], map: "UserId")
+  @@map("channelchats")
 }
 
-model channelmembers {
+model ChannelMembers {
   ChannelId Int
   UserId    Int
   createdAt DateTime @default(now()) @db.DateTime(6)
   updatedAt DateTime @default(now()) @db.DateTime(6)
-  users     users    @relation(fields: [UserId], references: [id], onDelete: Cascade, map: "FK_3446cc443ce59a7f7ae62acc168")
+  Users     Users    @relation(fields: [UserId], references: [id], onDelete: Cascade, map: "FK_3446cc443ce59a7f7ae62acc168")
 
   @@id([ChannelId, UserId])
   @@index([UserId], map: "UserId")
+  @@map("channelmembers")
 }
 
-model channels {
+model Channels {
   id           Int            @id @default(autoincrement())
   name         String         @db.VarChar(30)
   private      Boolean?       @default(false)
   createdAt    DateTime       @default(now()) @db.DateTime(6)
   updatedAt    DateTime       @default(now()) @db.DateTime(6)
   WorkspaceId  Int?
-  channelchats channelchats[]
-  workspaces   workspaces?    @relation(fields: [WorkspaceId], references: [id], map: "FK_9fb12216c2d8cac3fad686e293b")
+  ChannelChats ChannelChats[]
+  Workspaces   Workspaces?    @relation(fields: [WorkspaceId], references: [id], map: "FK_9fb12216c2d8cac3fad686e293b")
 
   @@index([WorkspaceId], map: "WorkspaceId")
+  @@map("channels")
 }
 
-model dms {
-  id                          Int         @id @default(autoincrement())
-  content                     String      @db.Text
-  createdAt                   DateTime    @default(now()) @db.DateTime(6)
-  updatedAt                   DateTime    @default(now()) @db.DateTime(6)
-  WorkspaceId                 Int?
-  SenderId                    Int?
-  ReceiverId                  Int?
-  workspaces                  workspaces? @relation(fields: [WorkspaceId], references: [id], map: "FK_904b6c6393befe39400ad9ff29c")
-  users_dms_ReceiverIdTousers users?      @relation("dms_ReceiverIdTousers", fields: [ReceiverId], references: [id], map: "FK_ccb84506be7d2dcb3df1163e8ac")
-  users_dms_SenderIdTousers   users?      @relation("dms_SenderIdTousers", fields: [SenderId], references: [id], map: "FK_e0b2f87fa1167f44f12aea6f5ca")
+model DMs {
+  id          Int         @id @default(autoincrement())
+  content     String      @db.Text
+  createdAt   DateTime    @default(now()) @db.DateTime(6)
+  updatedAt   DateTime    @default(now()) @db.DateTime(6)
+  WorkspaceId Int?
+  SenderId    Int?
+  ReceiverId  Int?
+  Workspaces  Workspaces? @relation(fields: [WorkspaceId], references: [id], map: "FK_904b6c6393befe39400ad9ff29c")
+  Receiver    Users?      @relation("dms_ReceiverIdToUsers", fields: [ReceiverId], references: [id], map: "FK_ccb84506be7d2dcb3df1163e8ac")
+  Sender      Users?      @relation("dms_SenderIdToUsers", fields: [SenderId], references: [id], map: "FK_e0b2f87fa1167f44f12aea6f5ca")
 
   @@index([WorkspaceId], map: "WorkspaceId")
   @@index([SenderId], map: "dms_ibfk_2")
   @@index([ReceiverId], map: "dms_ibfk_3")
+  @@map("dms")
 }
 
-model mentions {
-  id                               Int               @id @default(autoincrement())
-  category                         mentions_category
-  ChatId                           Int?
-  createdAt                        DateTime          @default(now()) @db.DateTime(6)
-  updatedAt                        DateTime          @default(now()) @db.DateTime(6)
-  WorkspaceId                      Int?
-  SenderId                         Int?
-  ReceiverId                       Int?
-  workspaces                       workspaces?       @relation(fields: [WorkspaceId], references: [id], map: "FK_51792a8377dc294a53b2bf7b213")
-  users_mentions_ReceiverIdTousers users?            @relation("mentions_ReceiverIdTousers", fields: [ReceiverId], references: [id], map: "FK_9cdbb618081d505406bde0e248e")
-  users_mentions_SenderIdTousers   users?            @relation("mentions_SenderIdTousers", fields: [SenderId], references: [id], map: "FK_f2a3d51cdda2918df6295336ebb")
+model Mentions {
+  id          Int               @id @default(autoincrement())
+  category    mentions_category
+  ChatId      Int?
+  createdAt   DateTime          @default(now()) @db.DateTime(6)
+  updatedAt   DateTime          @default(now()) @db.DateTime(6)
+  WorkspaceId Int?
+  SenderId    Int?
+  ReceiverId  Int?
+  Workspaces  Workspaces?       @relation(fields: [WorkspaceId], references: [id], map: "FK_51792a8377dc294a53b2bf7b213")
+  Receiver    Users?            @relation("mentions_ReceiverIdToUsers", fields: [ReceiverId], references: [id], map: "FK_9cdbb618081d505406bde0e248e")
+  Sender      Users?            @relation("mentions_SenderIdToUsers", fields: [SenderId], references: [id], map: "FK_f2a3d51cdda2918df6295336ebb")
 
   @@index([ReceiverId], map: "ReceiverId")
   @@index([SenderId], map: "SenderId")
   @@index([WorkspaceId], map: "WorkspaceId")
+  @@map("mentions")
 }
 
-model users {
-  id                                  Int                @id @default(autoincrement())
-  email                               String             @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar(30)
-  nickname                            String             @db.VarChar(30)
-  password                            String             @db.VarChar(100)
-  createdAt                           DateTime           @default(now()) @db.DateTime(6)
-  updatedAt                           DateTime           @default(now()) @db.DateTime(6)
-  deletedAt                           DateTime?          @db.DateTime(6)
-  channelchats                        channelchats[]
-  channelmembers                      channelmembers[]
-  dms_dms_ReceiverIdTousers           dms[]              @relation("dms_ReceiverIdTousers")
-  dms_dms_SenderIdTousers             dms[]              @relation("dms_SenderIdTousers")
-  mentions_mentions_ReceiverIdTousers mentions[]         @relation("mentions_ReceiverIdTousers")
-  mentions_mentions_SenderIdTousers   mentions[]         @relation("mentions_SenderIdTousers")
-  workspacemembers                    workspacemembers[]
-  workspaces                          workspaces[]
+model Users {
+  id               Int                @id @default(autoincrement())
+  email            String             @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar(30)
+  nickname         String             @db.VarChar(30)
+  password         String             @db.VarChar(100)
+  createdAt        DateTime           @default(now()) @db.DateTime(6)
+  updatedAt        DateTime           @default(now()) @db.DateTime(6)
+  deletedAt        DateTime?          @db.DateTime(6)
+  ChannelChats     ChannelChats[]
+  ChannelMembers   ChannelMembers[]
+  DMsReceiver      DMs[]              @relation("dms_ReceiverIdToUsers")
+  DMsSender        DMs[]              @relation("dms_SenderIdToUsers")
+  MentionsReceiver Mentions[]         @relation("mentions_ReceiverIdToUsers")
+  MentionsSender   Mentions[]         @relation("mentions_SenderIdToUsers")
+  WorkspaceMembers WorkspaceMembers[]
+  Workspaces       Workspaces[]
+
+  @@map("users")
 }
 
-model workspacemembers {
+model WorkspaceMembers {
   WorkspaceId Int
   UserId      Int
   createdAt   DateTime  @default(now()) @db.DateTime(6)
   updatedAt   DateTime  @default(now()) @db.DateTime(6)
   loggedInAt  DateTime? @db.DateTime(0)
-  users       users     @relation(fields: [UserId], references: [id], onDelete: Cascade, map: "FK_1f3af49b8195937f52d3a66e566")
+  Users       Users     @relation(fields: [UserId], references: [id], onDelete: Cascade, map: "FK_1f3af49b8195937f52d3a66e566")
 
   @@id([WorkspaceId, UserId])
   @@index([UserId], map: "UserId")
+  @@map("workspacemembers")
 }
 
-model workspaces {
+model Workspaces {
   id        Int        @id @default(autoincrement())
   name      String     @unique(map: "IDX_de659ece27e93d8fe29339d0a4") @db.VarChar(30)
   url       String     @unique(map: "IDX_22a04f0c0bf6ffd5961a28f5b7") @db.VarChar(30)
@@ -118,12 +126,13 @@ model workspaces {
   updatedAt DateTime   @default(now()) @db.DateTime(6)
   deletedAt DateTime?  @db.DateTime(6)
   OwnerId   Int?
-  channels  channels[]
-  dms       dms[]
-  mentions  mentions[]
-  users     users?     @relation(fields: [OwnerId], references: [id], map: "FK_d9a20240a57a1c75e626ef56b2f")
+  Channels  Channels[]
+  DMs       DMs[]
+  Mentions  Mentions[]
+  Users     Users?     @relation(fields: [OwnerId], references: [id], map: "FK_d9a20240a57a1c75e626ef56b2f")
 
   @@index([OwnerId], map: "OwnerId")
+  @@map("workspaces")
 }
 
 enum mentions_category {
