@@ -17,6 +17,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
 import { ChannelsModule } from './channels/channels.module';
 import { DMsModule } from './dms/dms.module';
 import { FrontendMiddleware } from './middlewares/frontend.middleware';
+import { PrismaModule } from './prisma/prisma.module';
 
 //// 33강 웹소켓 강의와 다름.
 @Module({
@@ -28,6 +29,7 @@ import { FrontendMiddleware } from './middlewares/frontend.middleware';
     WorkspacesModule,
     ChannelsModule,
     DMsModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
