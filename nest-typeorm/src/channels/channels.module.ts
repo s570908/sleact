@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChannelChats } from '../entities/ChannelChats';
-import { ChannelMembers } from '../entities/ChannelMembers';
-import { Channels } from '../entities/Channels';
-import { Users } from '../entities/Users';
-import { Workspaces } from '../entities/Workspaces';
+// import { TypeOrmModule } from '@nestjs/typeorm';
+// import { ChannelChats } from '../entities/ChannelChats';
+// import { ChannelMembers } from '../entities/ChannelMembers';
+// import { Channels } from '../entities/Channels';
+// import { Users } from '../entities/Users';
+// import { Workspaces } from '../entities/Workspaces';
 import { ChannelsService } from './channels.service';
 import { ChannelsController } from './channels.controller';
 import { EventsModule } from '../events/events.module';
@@ -12,13 +12,13 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Channels,
-      ChannelChats,
-      Users,
-      Workspaces,
-      ChannelMembers,
-    ]),
+    // TypeOrmModule.forFeature([
+    //   Channels,
+    //   ChannelChats,
+    //   Users,
+    //   Workspaces,
+    //   ChannelMembers,
+    // ]),
     EventsModule, // 여기에 넣어야 한다.
     PrismaModule,
   ],

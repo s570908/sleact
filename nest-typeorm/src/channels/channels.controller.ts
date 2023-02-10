@@ -18,9 +18,10 @@ import multer from 'multer';
 import path from 'path';
 import { LoggedInGuard } from '../auth/logged-in.guard';
 import { User } from '../common/decorators/user.decorator';
-import { Users } from '../entities/Users';
+//import { Users } from '../entities/Users';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { ChannelsService } from './channels.service';
+import { UserDto } from 'src/users/dto/user.dto';
 
 try {
   fs.readdirSync('uploads');
@@ -38,7 +39,7 @@ export class ChannelsController {
 
   @ApiOperation({ summary: '워크스페이스 채널 모두 가져오기' })
   @Get(':url/channels')
-  async getWorkspaceChannels(@Param('url') url, @User() user: Users) {
+  async getWorkspaceChannels(@Param('url') url, @User() user: UserDto) {
     //console.log('getWorkspaceChannels url user ', url, user);
     return this.channelsService.getWorkspaceChannels(url, user.id);
   }
@@ -54,7 +55,7 @@ export class ChannelsController {
   async createWorkspaceChannels(
     @Param('url') url,
     @Body() body: CreateChannelDto,
-    @User() user: Users,
+    @User() user: UserDto,
   ) {
     return this.channelsService.createWorkspaceChannels(
       url,
@@ -114,7 +115,7 @@ export class ChannelsController {
     @Param('url') url,
     @Param('name') name,
     @Body('content') content,
-    @User() user: Users,
+    @User() user: UserDto,
   ) {
     return this.channelsService.createWorkspaceChannelChats(
       url,
@@ -145,7 +146,7 @@ export class ChannelsController {
     @Param('url') url,
     @Param('name') name,
     @UploadedFiles() files: Express.Multer.File[],
-    @User() user: Users,
+    @User() user: UserDto,
   ) {
     return this.channelsService.createWorkspaceChannelImages(
       url,

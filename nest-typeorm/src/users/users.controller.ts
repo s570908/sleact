@@ -14,9 +14,10 @@ import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { NotLoggedInGuard } from '../auth/not-logged-in.guard';
 import { LoggedInGuard } from '../auth/logged-in.guard';
 import { User } from '../common/decorators/user.decorator';
-import { Users } from '../entities/Users';
+//import { Users } from '../entities/Users';
 import { JoinRequestDto } from './dto/join.request.dto';
 import { UsersService } from './users.service';
+import { UserDto } from './dto/user.dto';
 
 @ApiTags('USERS')
 @Controller('api/users')
@@ -26,7 +27,7 @@ export class UsersController {
   @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '내 정보 가져오기' })
   @Get()
-  async getProfile(@User() user: Users) {
+  async getProfile(@User() user: UserDto) {
     //console.log('GET:api/users: ', user);
     return user || false;
   }
@@ -34,7 +35,7 @@ export class UsersController {
   @ApiOperation({ summary: '로그인' })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@User() user: Users) {
+  async login(@User() user: UserDto) {
     //console.log('POST:api/users/login: user', user);
     return user;
   }

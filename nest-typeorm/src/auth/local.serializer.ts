@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UserNotFoundException } from 'src/users/exceptions/userNotFound.exception';
-import { Users } from '../entities/Users';
 
 @Injectable()
 export class LocalSerializer extends PassportSerializer {
@@ -10,7 +10,7 @@ export class LocalSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(user: Users, done: CallableFunction) {
+  serializeUser(user: UserDto, done: CallableFunction) {
     //console.log('serializeUser--user: ', user);
     done(null, user.id);
   }
