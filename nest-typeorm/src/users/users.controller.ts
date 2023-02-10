@@ -7,6 +7,7 @@ import {
   Get,
   Response,
   ForbiddenException,
+  Request,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
@@ -34,7 +35,7 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@User() user: Users) {
-    //console.log('POST:api/users/login: ', user);
+    //console.log('POST:api/users/login: user', user);
     return user;
   }
 
@@ -43,10 +44,6 @@ export class UsersController {
   @Post()
   async join(@Body() data: JoinRequestDto) {
     //console.log('Post--join', data);
-    const user = this.usersService.findByEmail(data.email);
-    if (!user) {
-      throw new NotFoundException();
-    }
     const result = await this.usersService.join(
       data.email,
       data.nickname,
@@ -63,7 +60,7 @@ export class UsersController {
   @ApiOperation({ summary: '로그아웃' })
   @UseGuards(LoggedInGuard)
   @Post('logout')
-  async logout(@Response() res) {
+  async logout(@Response() res, @Request() req) {
     res.clearCookie('connect.sid', { httpOnly: true });
     return res.send('ok');
   }

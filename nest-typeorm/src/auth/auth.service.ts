@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
-import { Users } from '../entities/Users';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(Users) private usersRepository: Repository<Users>,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async validateUser(email: string, password: string) {
-    const user = await this.usersRepository.findOne({
+    const user = await this.prismaService.users.findUnique({
       where: { email },
-      select: ['id', 'email', 'password'],
+      select: {
+        id: true,
+        email: true,
+        password: true,
+      },
     });
-    //console.log(email, password, user);
+    //console.log('validateUser--email, password, user ', email, password, user);
     if (!user) {
       return null;
     }

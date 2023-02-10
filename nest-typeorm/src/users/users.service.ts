@@ -1,33 +1,89 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+//import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import { ChannelMembers } from '../entities/ChannelMembers';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserNotFoundException } from './exceptions/userNotFound.exception';
 
-import { Users } from '../entities/Users';
-import { WorkspaceMembers } from '../entities/WorkspaceMembers';
+//const prisma = new PrismaClient();
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(Users) private usersRepository: Repository<Users>,
-    @InjectRepository(WorkspaceMembers)
-    private workspaceMembersRepository: Repository<WorkspaceMembers>,
-    @InjectRepository(ChannelMembers)
-    private channelMembersRepository: Repository<ChannelMembers>,
-    private connection: Connection,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async findByEmail(email: string) {
-    return this.usersRepository.findOne({
-      where: { email },
-      select: ['id', 'email', 'password'],
+    // return this.usersRepository.findOne({
+    //   where: { email },
+    //   select: ['id', 'email', 'password'],
+    // });
+    const user = await this.prismaService.users.findUnique({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+      },
     });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    return user;
   }
+
+  async join(email: string, nickname: string, password: string) {
+    return await this.prismaService
+      .$transaction(async () => {
+        const user = await this.prismaService.users.findUnique({
+          where: {
+            email,
+          },
+        });
+        if (user) {
+          //console.log('이미 존재하는 사용자 user ', user);
+          throw new ForbiddenException('이미 존재하는 사용자입니다');
+        }
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const returned = await this.prismaService.users.create({
+          data: {
+            email: email,
+            nickname: nickname,
+            password: hashedPassword,
+          },
+        });
+        const workspaceMember =
+          await this.prismaService.workspaceMembers.create({
+            data: {
+              UserId: returned.id,
+              WorkspaceId: 1,
+            },
+          });
+        // For rollback test
+        // if (true) {
+        //   throw new Error(`Make error and check the result for rollback`);
+        // }
+        const channelMember = await this.prismaService.channelMembers.create({
+          data: {
+            UserId: returned.id,
+            ChannelId: 1,
+          },
+        });
+        return true;
+        // console.log(
+        //   'join-- returned, workspaceMember, channelMember ',
+        //   returned,
+        //   workspaceMember,
+        //   channelMember,
+        // );
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
+  }
+
+  /*
 
   async join(email: string, nickname: string, password: string) {
     const queryRunner = this.connection.createQueryRunner();
@@ -68,4 +124,6 @@ export class UsersService {
       await queryRunner.release();
     }
   }
+
+  */
 }

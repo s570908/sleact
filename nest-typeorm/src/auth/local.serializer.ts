@@ -1,20 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
-import { InjectRepository } from '@nestjs/typeorm';
-import { WorkspaceMembers } from 'src/entities/WorkspaceMembers';
-import { Workspaces } from 'src/entities/Workspaces';
-import { Repository } from 'typeorm';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserNotFoundException } from 'src/users/exceptions/userNotFound.exception';
 import { Users } from '../entities/Users';
-import { AuthService } from './auth.service';
 
 @Injectable()
 export class LocalSerializer extends PassportSerializer {
-  constructor(
-    private readonly authService: AuthService,
-    @InjectRepository(Users) private usersRepository: Repository<Users>,
-    @InjectRepository(Workspaces)
-    private workspacesRepository: Repository<Workspaces>,
-  ) {
+  constructor(private readonly prismaService: PrismaService) {
     super();
   }
 
@@ -24,6 +16,39 @@ export class LocalSerializer extends PassportSerializer {
   }
 
   async deserializeUser(userId: string, done: CallableFunction) {
+    const user = await this.prismaService.users.findUnique({
+      where: {
+        id: +userId,
+      },
+      select: {
+        id: true,
+        email: true,
+        //password: true,
+        Workspaces: true,
+        WorkspaceMembers: {
+          select: {
+            WorkspaceId: true,
+          },
+        },
+      },
+    });
+    if (!user) {
+      console.log('deserializeUser: User not found');
+      throw new UserNotFoundException();
+    }
+    //console.log('deserializeUser--user ', user);
+    const workspaces = await this.prismaService.workspaces.findMany({
+      where: {
+        id: { in: user.WorkspaceMembers.map((wm) => wm.WorkspaceId) },
+      },
+    });
+    if (user?.WorkspaceMembers) {
+      user.Workspaces = workspaces;
+      delete user.WorkspaceMembers;
+    }
+    done(null, user);
+    //console.log('deserializeUser--user ', user);
+
     // Method 2
 
     // For test purpose of Method 1, commented out because it works good.
@@ -49,28 +74,28 @@ export class LocalSerializer extends PassportSerializer {
     // }
     // console.log('deserializeUser--aUser ', aUser);
 
-    return await this.usersRepository
-      .createQueryBuilder('users')
-      .innerJoinAndSelect(
-        'users.WorkspaceMembers',
-        'workspaceMembers',
-        'workspaceMembers.UserId = :userId',
-        { userId },
-      )
-      .innerJoinAndSelect('workspaceMembers.Workspace', 'Workspace')
-      .getOne()
-      .then((user) => {
-        if (user?.WorkspaceMembers) {
-          user.Workspaces = user.WorkspaceMembers.map((wm) => wm.Workspace);
-          delete user.WorkspaceMembers;
-          delete user.createdAt;
-          delete user.updatedAt;
-          delete user.deletedAt;
-        }
-        console.log('deserializeUser--user: ', user);
-        done(null, user);
-      })
-      .catch((error) => done(error));
+    // return await this.usersRepository
+    //   .createQueryBuilder('users')
+    //   .innerJoinAndSelect(
+    //     'users.WorkspaceMembers',
+    //     'workspaceMembers',
+    //     'workspaceMembers.UserId = :userId',
+    //     { userId },
+    //   )
+    //   .innerJoinAndSelect('workspaceMembers.Workspace', 'Workspace')
+    //   .getOne()
+    //   .then((user) => {
+    //     if (user?.WorkspaceMembers) {
+    //       user.Workspaces = user.WorkspaceMembers.map((wm) => wm.Workspace);
+    //       delete user.WorkspaceMembers;
+    //       delete user.createdAt;
+    //       delete user.updatedAt;
+    //       delete user.deletedAt;
+    //     }
+    //     console.log('deserializeUser--user: ', user);
+    //     done(null, user);
+    //   })
+    //   .catch((error) => done(error));
 
     // Method 1
 

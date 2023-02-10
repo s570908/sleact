@@ -39,6 +39,7 @@ export class ChannelsController {
   @ApiOperation({ summary: '워크스페이스 채널 모두 가져오기' })
   @Get(':url/channels')
   async getWorkspaceChannels(@Param('url') url, @User() user: Users) {
+    //console.log('getWorkspaceChannels url user ', url, user);
     return this.channelsService.getWorkspaceChannels(url, user.id);
   }
 
@@ -74,7 +75,7 @@ export class ChannelsController {
 
   @ApiOperation({ summary: '워크스페이스 채널 멤버 초대하기' })
   @Post(':url/channels/:name/members')
-  async createWorkspaceMembers(
+  async createWorkspaceChannelMembers(
     @Param('url') url: string,
     @Param('name') name: string,
     @Body('email') email,
@@ -84,7 +85,6 @@ export class ChannelsController {
       name,
       email,
     );
-    console.log('createWorkspaceMembers: result ', result);
     if (result) {
       return 'ok';
     } else {
@@ -162,7 +162,7 @@ export class ChannelsController {
     @Param('name') name,
     @Query('after', ParseIntPipe) after: number,
   ) {
-    console.log('async getUnreads(url, name, after) ', url, name, after);
+    //console.log('async getUnreads(url, name, after) ', url, name, after);
     return this.channelsService.getChannelUnreadsCount(url, name, after);
   }
 }

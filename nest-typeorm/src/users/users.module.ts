@@ -1,15 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChannelMembers } from '../entities/ChannelMembers';
-import { Users } from '../entities/Users';
-import { WorkspaceMembers } from '../entities/WorkspaceMembers';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Users, ChannelMembers, WorkspaceMembers]),
-  ],
+  imports: [PrismaModule],
   providers: [UsersService],
   exports: [UsersService],
   controllers: [UsersController],

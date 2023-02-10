@@ -96,14 +96,14 @@ export class WorkspacesService {
       .getMany();
   }
 
-  async getWorkspaceChannels(url: string) {
-    return this.channelsRepository
-      .createQueryBuilder('channel')
-      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
-        url,
-      })
-      .getMany();
-  }
+  // async getWorkspaceChannels(url: string) {
+  //   return this.channelsRepository
+  //     .createQueryBuilder('channel')
+  //     .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+  //       url,
+  //     })
+  //     .getMany();
+  // }
 
   async createWorkspaceMembers(url: string, email: any) {
     console.log('createWorkspaceMembers: url, email ', url, email);

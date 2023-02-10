@@ -1,3 +1,34 @@
+### @index=24
+@name=POST /workspaces/:workspace/channels/:channel/images
+@workspaceUrl24=slack
+@channel24=일반
+@chat24=test chat
+@fileName1-24=525-500x500.jpg
+@filePath1-24=C:\Users\Song\Pictures\525-500x500.jpg
+@imageType1-24=jpeg
+@fileName2-24=403-500x500.jpg
+@filePath2-24=C:\Users\Song\Pictures\403-500x500.jpg
+@imageType2-24=jpeg
+POST http://localhost:3095/api/workspaces/{{workspaceUrl24}}/channels/{{channel24}}/images
+Content-Type: multipart/form-data; boundary=MyWeb
+
+--MyWeb
+Content-Disposition: form-data; name="image"; filename="{{fileName1-24}}"
+Content-Type: image/{{imageType1-24}}
+
+< {{filePath1-24}}
+--MyWeb--
+
+### @index=23
+@name=POST /workspaces/:workspace/channels/:channel/chats
+@workspaceUrl23=slack
+@channel23=general
+@chat23=test chat
+POST  http://localhost:3095/api/workspaces/{{workspaceUrl23}}/channels/{{channel23}}/chats
+Content-Type: application/json
+
+{"content": "{{chat23}}"}
+
 ### @index=22
 @name=GET /workspaces/:workspace/dms/:id/unreads
 @workspaceUrl22=slack
@@ -9,8 +40,8 @@ Content-Type: application/json
 ### @index=21
 @name=GET /workspaces/:workspace/channels/:channel/unreads
 @workspaceUrl21=slack
-@channel21=general
-@after21=1673288684718
+@channel21=일반
+@after21=1664845335983
 GET  http://localhost:3095/api/workspaces/{{workspaceUrl21}}/channels/{{channel21}}/unreads?after={{after21}}
 
 ### @index=20
@@ -51,7 +82,7 @@ Content-Type: application/json
 ### @index=16
 @name=POST /workspaces/:workspace/members
 @workspaceUrl16=slack
-@email16=client1@client.com
+@email16=client8@client.com
 POST http://localhost:3095/api/workspaces/{{workspaceUrl16}}/members
 Content-Type: application/json
 
@@ -121,7 +152,7 @@ Content-Type: application/json
 @name = /workspaces/:workspace/channels/:channel/members
 @workspaceUrl8=slack
 @channel8=general
-@email8=client2@client.com
+@email8=client8@client.com
 POST  http://localhost:3095/api/workspaces/{{workspaceUrl8}}/channels/{{channel8}}/members
 Content-Type: application/json
 
@@ -132,7 +163,7 @@ Content-Type: application/json
 ### @index=7
 @name = GET /workspaces/:workspace/channels/:channel/members
 @workspaceUrl7=slack
-@channel7=Sleact Frontend
+@channel7=일반
 GET  http://localhost:3095/api/workspaces/{{workspaceUrl7}}/channels/{{channel7}}/members
 Content-Type: application/json
 
@@ -144,7 +175,7 @@ GET  http://localhost:3095/api/workspaces/{{workspaceUrl6}}/channels/{{channel6}
 Content-Type: application/json
 
 ### @index=5
-@name=GET /workspaces/:workspacGET /workspaces/:workspace/channels/e/dms/:id/chats 
+@name=GET /workspaces/:workspace/dms/:id/chats 
 @workspaceUrl5=slack
 @id5=12
 @perPage5=20
@@ -181,8 +212,8 @@ Content-Type: application/json
 
 ### @index=1
 @name=POST /workspaces/:workspace/channels
-@workspaceUrl1=sleact
-@name1=일반
+@workspaceUrl1=cau
+@name1=Football
 POST http://localhost:3095/api/workspaces/{{workspaceUrl1}}/channels
 Content-Type: application/json
 
@@ -196,8 +227,8 @@ Content-Type: application/json
 
 ### @index=0
 @name=POST /users
-@email0=client0@client.com
-@nickname0=client0
+@email0=clientNew4@client.com
+@nickname0=clientNew4
 @password0=121212
 POST http://localhost:3095/api/users/
 Content-Type: application/json
