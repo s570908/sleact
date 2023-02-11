@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   UseGuards,
-  Request,
   Post,
   Body,
   Param,
@@ -11,14 +10,15 @@ import {
   UseInterceptors,
   UploadedFiles,
 } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as fs from 'fs';
 import multer from 'multer';
 import path from 'path';
+import { UserDto } from 'src/users/dto/user.dto';
 import { LoggedInGuard } from '../auth/logged-in.guard';
 import { User } from '../common/decorators/user.decorator';
-import { Users } from '../entities/Users';
+//import { Users } from '../entities/Users';
 import { DMsService } from './dms.service';
 
 try {
@@ -37,7 +37,7 @@ export class DMsController {
 
   @ApiOperation({ summary: '워크스페이스 DM 모두 가져오기' })
   @Get(':url/dms')
-  async getWorkspaceChannels(@Param('url') url, @User() user: Users) {
+  async getWorkspaceChannels(@Param('url') url, @User() user: UserDto) {
     return this.dmsService.getWorkspaceDMs(url, user.id);
   }
 
@@ -48,7 +48,7 @@ export class DMsController {
     @Param('id', ParseIntPipe) id: number,
     @Query('perPage', ParseIntPipe) perPage: number,
     @Query('page', ParseIntPipe) page: number,
-    @User() user: Users,
+    @User() user: UserDto,
   ) {
     return this.dmsService.getWorkspaceDMChats(url, id, user.id, perPage, page);
   }
@@ -59,7 +59,7 @@ export class DMsController {
     @Param('url') url,
     @Param('id', ParseIntPipe) id: number,
     @Body('content') content,
-    @User() user: Users,
+    @User() user: UserDto,
   ) {
     return this.dmsService.createWorkspaceDMChats(url, content, id, user.id);
   }
@@ -84,7 +84,7 @@ export class DMsController {
     @Param('url') url,
     @Param('id', ParseIntPipe) id: number,
     @UploadedFiles() files: Express.Multer.File[],
-    @User() user: Users,
+    @User() user: UserDto,
   ) {
     //console.log('=====> files: ', files);
     return this.dmsService.createWorkspaceDMImages(url, files, id, user.id);
@@ -96,7 +96,7 @@ export class DMsController {
     @Param('url') url,
     @Param('id', ParseIntPipe) id: number,
     @Query('after', ParseIntPipe) after: number,
-    @User() user: Users,
+    @User() user: UserDto,
   ) {
     return this.dmsService.getDMUnreadsCount(url, id, user.id, after);
   }

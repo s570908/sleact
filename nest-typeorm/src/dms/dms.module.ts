@@ -1,14 +1,19 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DMs } from '../entities/DMs';
-import { Users } from '../entities/Users';
-import { Workspaces } from '../entities/Workspaces';
+// import { TypeOrmModule } from '@nestjs/typeorm';
+// import { DMs } from '../entities/DMs';
+// import { Users } from '../entities/Users';
+// import { Workspaces } from '../entities/Workspaces';
 import { DMsController } from './dms.controller';
 import { DMsService } from './dms.service';
 import { EventsModule } from '../events/events.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DMs, Users, Workspaces]), EventsModule],
+  imports: [
+    //TypeOrmModule.forFeature([DMs, Users, Workspaces]),
+    EventsModule,
+    PrismaModule,
+  ],
   controllers: [DMsController],
   providers: [DMsService],
 })
