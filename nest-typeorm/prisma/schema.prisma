@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fieldReference", "filteredRelationCount"]
+  previewFeatures = ["filteredRelationCount", "fieldReference"]
 }
 
 datasource db {
@@ -15,8 +15,8 @@ model ChannelChats {
   updatedAt DateTime  @default(now()) @db.DateTime(6)
   UserId    Int?
   ChannelId Int?
-  Channels  Channels? @relation(fields: [ChannelId], references: [id], map: "FK_8494e7d49237c46d648fbab8cf4")
-  Users     Users?    @relation(fields: [UserId], references: [id], map: "FK_d94a7a11d2bc17e56ed7c9790c3")
+  Channel   Channels? @relation(fields: [ChannelId], references: [id], map: "FK_8494e7d49237c46d648fbab8cf4")
+  User      Users?    @relation(fields: [UserId], references: [id], map: "FK_d94a7a11d2bc17e56ed7c9790c3")
 
   @@index([ChannelId], map: "ChannelId")
   @@index([UserId], map: "UserId")
@@ -28,7 +28,7 @@ model ChannelMembers {
   UserId    Int
   createdAt DateTime @default(now()) @db.DateTime(6)
   updatedAt DateTime @default(now()) @db.DateTime(6)
-  Users     Users    @relation(fields: [UserId], references: [id], onDelete: Cascade, map: "FK_3446cc443ce59a7f7ae62acc168")
+  User      Users    @relation(fields: [UserId], references: [id], onDelete: Cascade, map: "FK_3446cc443ce59a7f7ae62acc168")
 
   @@id([ChannelId, UserId])
   @@index([UserId], map: "UserId")
@@ -43,7 +43,7 @@ model Channels {
   updatedAt    DateTime       @default(now()) @db.DateTime(6)
   WorkspaceId  Int?
   ChannelChats ChannelChats[]
-  Workspaces   Workspaces?    @relation(fields: [WorkspaceId], references: [id], map: "FK_9fb12216c2d8cac3fad686e293b")
+  Workspace    Workspaces?    @relation(fields: [WorkspaceId], references: [id], map: "FK_9fb12216c2d8cac3fad686e293b")
 
   @@index([WorkspaceId], map: "WorkspaceId")
   @@map("channels")
@@ -57,7 +57,7 @@ model DMs {
   WorkspaceId Int?
   SenderId    Int?
   ReceiverId  Int?
-  Workspaces  Workspaces? @relation(fields: [WorkspaceId], references: [id], map: "FK_904b6c6393befe39400ad9ff29c")
+  Workspace   Workspaces? @relation(fields: [WorkspaceId], references: [id], map: "FK_904b6c6393befe39400ad9ff29c")
   Receiver    Users?      @relation("dms_ReceiverIdToUsers", fields: [ReceiverId], references: [id], map: "FK_ccb84506be7d2dcb3df1163e8ac")
   Sender      Users?      @relation("dms_SenderIdToUsers", fields: [SenderId], references: [id], map: "FK_e0b2f87fa1167f44f12aea6f5ca")
 
@@ -76,7 +76,7 @@ model Mentions {
   WorkspaceId Int?
   SenderId    Int?
   ReceiverId  Int?
-  Workspaces  Workspaces?       @relation(fields: [WorkspaceId], references: [id], map: "FK_51792a8377dc294a53b2bf7b213")
+  Workspace   Workspaces?       @relation(fields: [WorkspaceId], references: [id], map: "FK_51792a8377dc294a53b2bf7b213")
   Receiver    Users?            @relation("mentions_ReceiverIdToUsers", fields: [ReceiverId], references: [id], map: "FK_9cdbb618081d505406bde0e248e")
   Sender      Users?            @relation("mentions_SenderIdToUsers", fields: [SenderId], references: [id], map: "FK_f2a3d51cdda2918df6295336ebb")
 
@@ -107,12 +107,14 @@ model Users {
 }
 
 model WorkspaceMembers {
-  WorkspaceId Int
-  UserId      Int
-  createdAt   DateTime  @default(now()) @db.DateTime(6)
-  updatedAt   DateTime  @default(now()) @db.DateTime(6)
-  loggedInAt  DateTime? @db.DateTime(0)
-  Users       Users     @relation(fields: [UserId], references: [id], onDelete: Cascade, map: "FK_1f3af49b8195937f52d3a66e566")
+  WorkspaceId   Int
+  UserId        Int
+  createdAt     DateTime  @default(now()) @db.DateTime(6)
+  updatedAt     DateTime  @default(now()) @db.DateTime(6)
+  loggedInAt    DateTime? @db.DateTime(0)
+  deletedAt     DateTime?
+  softDeletedAt DateTime?
+  User          Users     @relation(fields: [UserId], references: [id], onDelete: Cascade, map: "FK_1f3af49b8195937f52d3a66e566")
 
   @@id([WorkspaceId, UserId])
   @@index([UserId], map: "UserId")
@@ -130,7 +132,7 @@ model Workspaces {
   Channels  Channels[]
   DMs       DMs[]
   Mentions  Mentions[]
-  Users     Users?     @relation(fields: [OwnerId], references: [id], map: "FK_d9a20240a57a1c75e626ef56b2f")
+  Owner     Users?     @relation(fields: [OwnerId], references: [id], map: "FK_d9a20240a57a1c75e626ef56b2f")
 
   @@index([OwnerId], map: "OwnerId")
   @@map("workspaces")
