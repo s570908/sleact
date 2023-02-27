@@ -349,21 +349,33 @@ export class WorkspacesService {
 
   async deleteWorkspaceMember(url: string, id: number) {
     console.log('deleteWorkspaceMember: url, id ', url, id);
-    const workspaceMember = await this.workspaceMembersRepository
-      .createQueryBuilder('workspaceMember')
-      .innerJoin('workspaceMember.User', 'user', 'user.id = :id', {
-        id,
-      })
-      .innerJoin(
-        'workspaceMember.Workspace',
-        'workspace',
-        'workspace.url = :url',
-        {
-          url,
-        },
-      )
-      .getOne();
-    console.log('deleteWorkspaceMember: workspaceMember ', workspaceMember);
+    const aWorkspace = await this.prismaService.workspaces.findUnique({
+      where: { url: url },
+    });
+    const aWorkspaceMemeber = await this.prismaService.workspaceMembers.delete({
+      where: {
+        WorkspaceId_UserId: { WorkspaceId: aWorkspace.id, UserId: id },
+      },
+    });
+    console.log(
+      'deleteWorkspaceMember--aWorkspaceMemeber: ',
+      aWorkspaceMemeber,
+    );
+    // const workspaceMember = await this.workspaceMembersRepository
+    //   .createQueryBuilder('workspaceMember')
+    //   .innerJoin('workspaceMember.User', 'user', 'user.id = :id', {
+    //     id,
+    //   })
+    //   .innerJoin(
+    //     'workspaceMember.Workspace',
+    //     'workspace',
+    //     'workspace.url = :url',
+    //     {
+    //       url,
+    //     },
+    //   )
+    //   .getOne();
+    // console.log('deleteWorkspaceMember: workspaceMember ', workspaceMember);
     // const result = await this.workspaceMembersRepository.delete({
     //   UserId: workspaceMember.UserId,
     // });
