@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import selectForUserFields from 'src/data/user-select';
 // import { InjectRepository } from '@nestjs/typeorm';
 import { PrismaService } from 'src/prisma/prisma.service';
 // import { MoreThan, Repository } from 'typeorm';
@@ -47,7 +48,7 @@ export class ChannelsService {
     const foundChannels = await this.prismaService.channels.findMany({
       where: {
         id: { in: channels.map((ch) => ch.ChannelId) },
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },
@@ -56,7 +57,7 @@ export class ChannelsService {
     return await this.prismaService.channels.findMany({
       where: {
         id: { in: channels.map((ch) => ch.ChannelId) },
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },
@@ -82,7 +83,7 @@ export class ChannelsService {
     return await this.prismaService.channels.findFirst({
       where: {
         name: name,
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },
@@ -102,7 +103,7 @@ export class ChannelsService {
         const newChannel = await this.prismaService.channels.create({
           data: {
             name: name,
-            Workspaces: {
+            Workspace: {
               connect: {
                 url: url,
               },
@@ -152,7 +153,7 @@ export class ChannelsService {
     const foundChannel = await this.prismaService.channels.findFirst({
       where: {
         name: name,
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },
@@ -213,7 +214,7 @@ export class ChannelsService {
     const foundChannel = await this.prismaService.channels.findFirst({
       where: {
         name: name,
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },
@@ -308,24 +309,15 @@ export class ChannelsService {
   ) {
     const chats = await this.prismaService.channelChats.findMany({
       where: {
-        Channels: {
+        Channel: {
           name: name,
-          Workspaces: {
+          Workspace: {
             url: url,
           },
         },
       },
       include: {
-        Users: {
-          select: {
-            id: true,
-            email: true,
-            nickname: true,
-            createdAt: true,
-            updatedAt: true,
-            deletedAt: true,
-          },
-        },
+        User: selectForUserFields,
       },
       take: perPage,
       skip: perPage * (page - 1),
@@ -369,7 +361,7 @@ export class ChannelsService {
     const aChannel = await this.prismaService.channels.findFirst({
       where: {
         name: name,
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },
@@ -377,20 +369,20 @@ export class ChannelsService {
     const chatWithUser = await this.prismaService.channelChats.create({
       data: {
         content: content,
-        Users: {
+        User: {
           connect: {
             id: myId,
           },
         },
-        Channels: {
+        Channel: {
           connect: {
             id: aChannel.id,
           },
         },
       },
       include: {
-        Users: true,
-        Channels: true,
+        User: selectForUserFields,
+        Channel: true,
       },
     });
     // console.log(
@@ -448,7 +440,7 @@ export class ChannelsService {
     const aChannel = await this.prismaService.channels.findFirst({
       where: {
         name: name,
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },
@@ -460,20 +452,20 @@ export class ChannelsService {
       const aChatWithUser = await this.prismaService.channelChats.create({
         data: {
           content: files[i].path,
-          Users: {
+          User: {
             connect: {
               id: myId,
             },
           },
-          Channels: {
+          Channel: {
             connect: {
               id: aChannel.id,
             },
           },
         },
         include: {
-          Users: true,
-          Channels: true,
+          User: selectForUserFields,
+          Channel: true,
         },
       });
 
@@ -519,7 +511,7 @@ export class ChannelsService {
     const aChannel = await this.prismaService.channels.findFirst({
       where: {
         name: name,
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },

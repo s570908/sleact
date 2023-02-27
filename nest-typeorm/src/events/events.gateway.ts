@@ -29,7 +29,11 @@ export class EventsGateway
   ) {
     const newNamespace = socket.nsp;
     //console.log('login', newNamespace);
+
+    // workspace url과socket id를 키로 하여서 user id를 기록한다.
     onlineMap[socket.nsp.name][socket.id] = data.id;
+
+    // workspace url에 속한 모든 user의 id array를 페이로드로 만들어서 이벤트로 송부한다.
     newNamespace.emit('onlineList', Object.values(onlineMap[socket.nsp.name]));
     data.channels.forEach((channel) => {
       console.log('join', socket.nsp.name, channel);

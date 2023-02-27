@@ -24,6 +24,11 @@ HTTP 요청 리스트(ajax)
 - body: { name: string(이름) }
 - return: IChannel
 
+### GET /workspaces/:workspace/channels/all
+
+- :workspace 내부의 모든 채널 리스트를 가져옴
+- return: IChannel[]
+
 ### GET /workspaces/:workspace/channels/:channel
 
 - :workspace 내부의 :channel 정보를 가져옴

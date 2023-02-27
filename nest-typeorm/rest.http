@@ -1,10 +1,16 @@
+###  @index=28
+@name = GET /workspaces/:workspace/channels/all
+@workspaceUrl28=cau
+GET http://localhost:3095/api/workspaces/{{workspaceUrl28}}/channels/all
+Content-Type: application/json
+
 ### @index=27
 @name=POST /workspaces/:workspace/dms/:id/images
 @workspaceUrl27=slack
 @id27=15
-@fileName1-27=525-500x500.jpg
-@filePath1-27=C:\Users\Song\Pictures\525-500x500.jpg
-@imageType1-27=jpeg
+@fileName1-27=1.png
+@filePath1-27=C:/Users/Song/Pictures/dev/1.png
+@imageType1-27=png
 @fileName2-27=403-500x500.jpg
 @filePath2-27=C:\Users\Song\Pictures\403-500x500.jpg
 @imageType2-27=jpeg
@@ -22,7 +28,7 @@ Content-Type: image/{{imageType1-27}}
 @name=POST /workspaces/:workspace/dms/:id/chats
 @workspaceUrl26=slack
 @id26=15
-@chat26=test chat 6번째 12 to 15
+@chat26=test chat 200번째 12 to 15
 POST  http://localhost:3095/api/workspaces/{{workspaceUrl26}}/dms/{{id26}}/chats
 Content-Type: application/json
 
@@ -38,12 +44,11 @@ Content-Type: application/json
 @name=POST /workspaces/:workspace/channels/:channel/images
 @workspaceUrl24=slack
 @channel24=일반
-@chat24=test chat
-@fileName1-24=525-500x500.jpg
-@filePath1-24=C:\Users\Song\Pictures\525-500x500.jpg
+@fileName1-24=pigFoot.jpg
+@filePath1-24=c:/Users/Song/Pictures/pigFoot.jpg
 @imageType1-24=jpeg
-@fileName2-24=403-500x500.jpg
-@filePath2-24=C:\Users\Song\Pictures\403-500x500.jpg
+@fileName2-24=pigFoot.jpg
+@filePath2-24=c:/Users/Song/Pictures/pigFoot.jpg
 @imageType2-24=jpeg
 POST http://localhost:3095/api/workspaces/{{workspaceUrl24}}/channels/{{channel24}}/images
 Content-Type: multipart/form-data; boundary=MyWeb
@@ -92,7 +97,7 @@ Content-Type: application/json
 ###  @index=19
 @name = DELETE /workspaces/:workspace/members/:id
 @workspaceUrl19=dally
-@id19=13
+@id19=15
 DELETE   http://localhost:3095/api/workspaces/{{workspaceUrl19}}/members/{{id19}}
 Content-Type: application/json
 
@@ -118,7 +123,7 @@ Content-Type: application/json
 ### @index=16
 @name=POST /workspaces/:workspace/members
 @workspaceUrl16=slack
-@email16=client8@client.com
+@email16=client200@client.com
 POST http://localhost:3095/api/workspaces/{{workspaceUrl16}}/members
 Content-Type: application/json
 
@@ -155,6 +160,7 @@ Content-Type: application/json
 }
 
 ### @index=12
+@name=GET /workspaces/:workspace/channels/:channel/unreads
 @workspaceUrl12=Slack
 @channel12=Sleact Frontend
 @timestamp12=0
@@ -168,8 +174,8 @@ Content-Type: application/json
 
 ### @index=10
 @name=POST /workspaces
-@workspaceName10=Slack
-@url10=slack
+@workspaceName10=Prisma로 변환 2
+@url10=prisma-migration2
 POST http://localhost:3095/api/workspaces
 Content-Type: application/json
 
@@ -228,7 +234,7 @@ Content-Type: application/json
 
 ### @index=4
 @name=GET /workspaces/:workspace/members
-@workspaceUrl4=cau
+@workspaceUrl4=slack
 GET http://localhost:3095/api/workspaces/{{workspaceUrl4}}/members
 Content-Type: application/json
 

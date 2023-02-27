@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import selectForUserFields from 'src/data/user-select';
 import { onlineMap } from 'src/events/onlineMap';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MoreThan, Repository } from 'typeorm';
@@ -12,16 +13,16 @@ function getKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
 
-const selectForUserFields = {
-  select: {
-    id: true,
-    email: true,
-    nickname: true,
-    createdAt: true,
-    updatedAt: true,
-    deletedAt: true,
-  },
-};
+// const selectForUserFields = {
+//   select: {
+//     id: true,
+//     email: true,
+//     nickname: true,
+//     createdAt: true,
+//     updatedAt: true,
+//     deletedAt: true,
+//   },
+// };
 
 @Injectable()
 export class DMsService {
@@ -38,7 +39,7 @@ export class DMsService {
     const aDMs = await this.prismaService.dMs.findMany({
       where: {
         SenderId: myId,
-        Workspaces: {
+        Workspace: {
           url: url,
         },
       },
@@ -80,14 +81,14 @@ export class DMsService {
           {
             SenderId: myId,
             ReceiverId: id,
-            Workspaces: {
+            Workspace: {
               url: url,
             },
           },
           {
             SenderId: id,
             ReceiverId: myId,
-            Workspaces: {
+            Workspace: {
               url: url,
             },
           },
@@ -143,7 +144,7 @@ export class DMsService {
           },
         },
         content: content,
-        Workspaces: {
+        Workspace: {
           connect: {
             url: url,
           },
@@ -151,21 +152,22 @@ export class DMsService {
       },
       include: {
         Sender: selectForUserFields,
-        Workspaces: {
+        Workspace: {
           select: {
             url: true,
           },
         },
       },
     });
-    const aWorkspace = aDmWithSender.Workspaces;
-    delete aDmWithSender.Workspaces;
+    const aWorkspace = aDmWithSender.Workspace;
+    delete aDmWithSender.Workspace;
     console.log(
       'createWorkspaceDMChats-- aDmWithSender aWorkspace ',
       aDmWithSender,
       aWorkspace,
     );
 
+    // receiver id를 입력하면 그 receiver의 socket id를 가져온다.
     const aReceiverSocketId = getKeyByValue(
       onlineMap[`/ws-${aWorkspace.url}`],
       Number(id),
@@ -220,7 +222,7 @@ export class DMsService {
           Receiver: {
             connect: { id: id },
           },
-          Workspaces: {
+          Workspace: {
             connect: {
               id: aWorkspace.id,
             },
@@ -286,7 +288,7 @@ export class DMsService {
 
     const aCount = await this.prismaService.dMs.count({
       where: {
-        Workspaces: {
+        Workspace: {
           id: aWorkspace.id,
         },
         Sender: {

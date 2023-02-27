@@ -4,5 +4,5 @@
   "port": 3306,
   "username": "root",
   "password": "mcl4304!",
-  "database": "sleact-prisma"
+  "database": "sleact-prisma-test"
 }

@@ -7,9 +7,11 @@ import { WorkspaceMembers } from '../entities/WorkspaceMembers';
 import { Workspaces } from '../entities/Workspaces';
 import { WorkspacesService } from './workspaces.service';
 import { WorkspacesController } from './workspaces.controller';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     TypeOrmModule.forFeature([
       Users,
       Workspaces,
