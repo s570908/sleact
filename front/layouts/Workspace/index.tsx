@@ -13,7 +13,7 @@ import axios from 'axios';
 import gravatar from 'gravatar';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
+import { Link, Redirect, Route, Switch, RouteComponentProps } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useSWR from 'swr';
@@ -35,9 +35,9 @@ import {
   WorkspaceWrapper,
 } from './styles';
 
-const Workspace = () => {
+const Workspace = ({ location, history, match }: RouteComponentProps) => {
   const params = useParams<{ workspace?: string }>();
-  // console.log('params', params, 'location', location, 'routeMatch', routeMatch, 'history', history);
+
   const { workspace } = params;
   const [socket, disconnectSocket] = useSocket(workspace);
   const { data: userData, mutate: revalidateUser } = useSWR<IUser | false>('/api/users', fetcher);
@@ -47,6 +47,20 @@ const Workspace = () => {
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
+
+  console.log(
+    'Workspace: ',
+    workspace,
+    'params: ',
+    params,
+    'location: ',
+    location,
+    'match: ',
+    match,
+    'history: ',
+    history,
+  );
+
   const onLogOut = useCallback(() => {
     axios
       .post('/api/users/logout')
