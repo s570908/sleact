@@ -48,12 +48,6 @@ export class WorkspacesController {
     return this.workspacesService.getWorkspaceMembers(url);
   }
 
-  @ApiOperation({ summary: '워크스페이스 채널리스트 가져오기' })
-  @Get(':url/channels/all')
-  async getWorkspaceChannels(@Param('url') url: string) {
-    return this.workspacesService.getWorkspaceChannels(url);
-  }
-
   @ApiOperation({ summary: '워크스페이스 멤버 초대하기' })
   @Post(':url/members')
   async createWorkspaceMembers(

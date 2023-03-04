@@ -199,23 +199,6 @@ export class WorkspacesService {
     //   .getMany();
   }
 
-  async getWorkspaceChannels(url: string) {
-    const aChannels = await this.prismaService.channels.findMany({
-      where: {
-        Workspace: { url: url },
-      },
-    });
-    //console.log('getWorkspaceChannels--url, aChannels ', url, aChannels);
-    return aChannels;
-
-    // return this.channelsRepository
-    //   .createQueryBuilder('channel')
-    //   .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
-    //     url,
-    //   })
-    //   .getMany();
-  }
-
   async createWorkspaceMembers(url: string, email: any) {
     //console.log('createWorkspaceMembers: url, email ', url, email);
     const aReturnedWorkspaceMemebers = await this.prismaService
